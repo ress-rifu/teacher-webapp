@@ -22,7 +22,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
     // Calculate start and end of the week (Saturday - Thursday)
     const getSaturdayToThursdayRange = (weekIndex) => {
         const currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + (weekIndex * 7)); // Start at the correct week
+        currentDate.setDate(currentDate.getDate() + (weekIndex * 7)); // Adjust the current date based on the week index
 
         const startDate = new Date(currentDate);
         startDate.setDate(startDate.getDate() - startDate.getDay() + 6); // Saturday
@@ -224,6 +224,8 @@ const WeeklyRoutine = ({ routines = [] }) => {
                                                     {routine.slice(0, 7).map((cell, i) => (
                                                         <td key={i} className="p-4 whitespace-nowrap">{cell}</td>
                                                     ))}
+                                                    {/* Ensure teacher's name is included */}
+                                                    <td className="p-4 whitespace-nowrap">{routine[9]}</td>
                                                 </motion.tr>
                                             ))}
                                         </tbody>
