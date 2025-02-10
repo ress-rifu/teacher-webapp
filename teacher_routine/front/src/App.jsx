@@ -28,14 +28,8 @@ const App = () => {
         const response = await axios.get(`${API_URL}/api/routines`)
         const routinesData = response.data
 
-        const today = new Date()
-        today.setHours(0, 0, 0, 0)
-
-        // Filter out past routines
-        const filteredRoutines = routinesData.slice(1).filter((routine) => {
-          const routineDate = new Date(routine[0])
-          return routineDate >= today
-        })
+        // Remove date filtering to get all routines
+        const filteredRoutines = routinesData.slice(1)
 
         filteredRoutines.sort((a, b) => {
           const dateA = new Date(a[0])
@@ -46,7 +40,7 @@ const App = () => {
 
         setRoutines(filteredRoutines)
 
-        // Extract unique values
+        // Extract unique values from all routines
         setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[9]).filter(Boolean))])
         setUniqueClasses([...new Set(filteredRoutines.map((r) => r[2]).filter(Boolean))])
         setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))])
@@ -61,13 +55,12 @@ const App = () => {
     fetchRoutines()
   }, [])
 
-  // Adjusted filtering logic to prevent showing past routines
+  // Updated filtering logic to show all dates by default
   const filteredRoutines = routines.filter((routine) => {
     if (!routine[0] || !routine[8]) return false
     const routineDate = new Date(routine[0])
 
     return (
-      (routineDate >= new Date() || (selectedDate && routineDate.toDateString() === selectedDate.toDateString())) &&
       (!selectedTeacher || routine[9]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
       (!selectedClass || routine[2]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
@@ -88,6 +81,7 @@ const App = () => {
     setSelectedDate(null)
   }
 
+  // Rest of the component remains the same
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
