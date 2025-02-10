@@ -15,7 +15,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion"
 
 const WeeklyRoutine = ({ routines = [] }) => {
-  const [currentWeekIndex, setCurrentWeekIndex] = useState(0)
+  const [currentWeekIndex, setCurrentWeekIndex] = useState(0) // Default to current week
   const [sortClass, setSortClass] = useState(null)
   const [sortTime, setSortTime] = useState(null)
   const [sortSubject, setSortSubject] = useState(null)
@@ -25,17 +25,19 @@ const WeeklyRoutine = ({ routines = [] }) => {
   const [filterTeacher, setFilterTeacher] = useState("")
   const [selectedDate, setSelectedDate] = useState(null)
 
+  // Corrected week calculation to include current date
   const getSaturdayToThursdayRange = (weekIndex) => {
     const currentDate = new Date()
-    currentDate.setDate(currentDate.getDate() + weekIndex * 7)
+    const dayOfWeek = currentDate.getDay() // 0 = Sunday, 6 = Saturday
+    const diffToSaturday = dayOfWeek === 6 ? 0 : 6 - dayOfWeek - 1 // Days to previous Saturday
 
     const startDate = new Date(currentDate)
-    startDate.setDate(startDate.getDate() - startDate.getDay() + 6)
-    startDate.setHours(0, 0, 0, 0)
+    startDate.setDate(currentDate.getDate() - diffToSaturday + (weekIndex * 7)) // Adjust for week index
+    startDate.setHours(0, 0, 0, 0) // Start of Saturday
 
     const endDate = new Date(startDate)
-    endDate.setDate(startDate.getDate() + 4)
-    endDate.setHours(23, 59, 59, 999)
+    endDate.setDate(startDate.getDate() + 4) // Thursday (4 days after Saturday)
+    endDate.setHours(23, 59, 59, 999) // End of Thursday
 
     return { startDate, endDate }
   }
@@ -85,7 +87,18 @@ const WeeklyRoutine = ({ routines = [] }) => {
     })
   }
 
-  const sortedRoutines = getRoutinesForWeek(currentWeekIndex)
+  const sortedRoutines = useMemo(() => getRoutinesForWeek(currentWeekIndex), [
+    currentWeekIndex,
+    routines,
+    filterClass,
+    filterTime,
+    filterSubject,
+    filterTeacher,
+    selectedDate,
+    sortClass,
+    sortTime,
+    sortSubject,
+  ])
 
   const handleSortClass = () => setSortClass(sortClass === "asc" ? "desc" : "asc")
   const handleSortTime = () => setSortTime(sortTime === "asc" ? "desc" : "asc")
@@ -272,4 +285,3 @@ const WeeklyRoutine = ({ routines = [] }) => {
 }
 
 export default WeeklyRoutine;
-
