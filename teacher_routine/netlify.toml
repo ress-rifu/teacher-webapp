@@ -1,12 +1,12 @@
 [build]
-  base = "front"  # Set to 'front' because the frontend code is in that directory
-  publish = "front/dist"  # The path to your build output folder
-  command = "npm install && npm run build"  # The build command for your frontend
+  base = "front"  # The base directory for the frontend code
+  publish = "front/dist"  # The directory where Vite will output the production build
+  command = "npm install && npm run build"  # The command to build your Vite app
 
 [functions]
-  directory = "back/netlify/functions"  # Path to your serverless functions
+  directory = "back/netlify/functions"  # Directory for serverless functions (backend)
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/server"
+  to = "/.netlify/functions/server"  # This points to the serverless function endpoint
   status = 200
