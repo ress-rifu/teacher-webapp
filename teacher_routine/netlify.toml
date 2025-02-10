@@ -1,12 +1,9 @@
 [build]
-  base = "teacher_routine/front" 
-  publish = "teacher_routine/front/dist"  
+  base = "/"
+  publish = "front/dist"
   command = "npm install && npm run build"
-  
-[functions]
-  directory = "teacher_routine/back/netlify/functions"
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/server"
+  to = "/.netlify/functions/:splat"
   status = 200
