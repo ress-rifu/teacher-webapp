@@ -1,242 +1,259 @@
-"use client"
-
-import { useState, useMemo } from "react"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
-import { FiFilter, FiXCircle, FiCalendar, FiClock, FiBook, FiUserCheck, FiChevronLeft, FiChevronRight } from "react-icons/fi"
-import { motion, AnimatePresence } from "framer-motion"
+import React, { useState, useMemo } from 'react';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
+import { FiFilter, FiXCircle, FiCalendar, FiClock, FiBook, FiUser, FiUserCheck, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const WeeklyRoutine = ({ routines = [] }) => {
-  const [startDate, setStartDate] = useState(new Date())
-  const [selectedDay, setSelectedDay] = useState(null)
-  const [showFilter, setShowFilter] = useState(false)
-  const [filterText, setFilterText] = useState("")
-  const [filterClass, setFilterClass] = useState("")
-  const [filterTeacher, setFilterTeacher] = useState("")
-  const [filterSubject, setFilterSubject] = useState("")
+    const [currentWeekIndex, setCurrentWeekIndex] = useState(0); // Default to current week
 
-  // Get unique filter values
-  const uniqueClasses = useMemo(() => [...new Set(routines.map((r) => r[2]))], [routines])
-  const uniqueTeachers = useMemo(() => [...new Set(routines.map((r) => r[9]))], [routines])
-  const uniqueSubjects = useMemo(() => [...new Set(routines.map((r) => r[4]))], [routines])
+    // Sorting states
+    const [sortClass, setSortClass] = useState(null);
+    const [sortTime, setSortTime] = useState(null);
+    const [sortSubject, setSortSubject] = useState(null);
 
-  // Filter logic
-  const filteredRoutines = useMemo(() => {
-    let filtered = routines
+    // Filter states
+    const [filterClass, setFilterClass] = useState('');
+    const [filterTime, setFilterTime] = useState('');
+    const [filterSubject, setFilterSubject] = useState('');
+    const [filterTeacher, setFilterTeacher] = useState('');
+    const [selectedDate, setSelectedDate] = useState(null);
 
-    if (filterText) {
-      filtered = filtered.filter((event) => event.title.toLowerCase().includes(filterText.toLowerCase()))
-    }
+    // Calculate start and end of the week (Saturday - Thursday)
+    const getSaturdayToThursdayRange = (weekIndex) => {
+        const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + (weekIndex * 7)); // Adjust the current date based on the week index
 
-    if (filterClass) {
-      filtered = filtered.filter((event) => event[2].toLowerCase().includes(filterClass.toLowerCase()))
-    }
+        const startDate = new Date(currentDate);
+        startDate.setDate(startDate.getDate() - startDate.getDay() + 6); // Saturday
+        startDate.setHours(0, 0, 0, 0);
 
-    if (filterTeacher) {
-      filtered = filtered.filter((event) => event[9].toLowerCase().includes(filterTeacher.toLowerCase()))
-    }
+        const endDate = new Date(startDate);
+        endDate.setDate(startDate.getDate() + 4); // Thursday (4 days after Saturday)
+        endDate.setHours(23, 59, 59, 999);
 
-    if (filterSubject) {
-      filtered = filtered.filter((event) => event[4].toLowerCase().includes(filterSubject.toLowerCase()))
-    }
+        return { startDate, endDate };
+    };
 
-    return filtered
-  }, [filterText, filterClass, filterTeacher, filterSubject, routines])
+    const getRoutinesForWeek = (weekIndex) => {
+        const { startDate: weekStart, endDate: weekEnd } = getSaturdayToThursdayRange(weekIndex);
 
-  const handleDayClick = (day) => {
-    setSelectedDay(day)
-  }
+        const filteredRoutines = routines.filter((routine) => {
+            if (!routine[0] || !routine[0].trim()) return false;
 
-  const handleFilterChange = (e) => {
-    setFilterText(e.target.value)
-  }
+            const routineDate = new Date(routine[0]);
+            return routineDate >= weekStart && routineDate <= weekEnd;
+        });
 
-  const handleClearFilters = () => {
-    setFilterText("")
-    setFilterClass("")
-    setFilterTeacher("")
-    setFilterSubject("")
-  }
+        // Apply filters
+        const filteredByClass = filteredRoutines.filter((routine) =>
+            filterClass ? routine[2].toLowerCase().includes(filterClass.toLowerCase()) : true
+        );
 
-  const dayEvents = filteredRoutines.filter((event) => {
-    return selectedDay && new Date(event[0]).toDateString() === selectedDay.toDateString()
-  })
+        const filteredByTime = filteredByClass.filter((routine) =>
+            filterTime ? routine[1].toLowerCase().includes(filterTime.toLowerCase()) : true
+        );
 
-  const days = []
-  for (let i = 0; i < 7; i++) {
-    const date = new Date()
-    date.setDate(date.getDate() - date.getDay() + i)
-    days.push(date)
-  }
+        const filteredBySubject = filteredByTime.filter((routine) =>
+            filterSubject ? routine[4].toLowerCase().includes(filterSubject.toLowerCase()) : true
+        );
 
-  return (
-    <div className="weekly-routine bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen p-4 md:p-8">
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden"
-      >
-        <div className="p-6 md:p-8">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-8">
-            <motion.h1
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="text-3xl md:text-4xl font-bold text-gray-800 mb-4 md:mb-0"
-            >
-              Weekly Routine
-            </motion.h1>
-            <div className="flex items-center space-x-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setShowFilter(!showFilter)}
-                className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center"
-              >
-                <FiFilter className="mr-2" /> Filter
-              </motion.button>
-              <DatePicker
-                selected={startDate}
-                onChange={(date) => setStartDate(date)}
-                customInput={
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-indigo-500 text-white px-4 py-2 rounded-lg flex items-center"
-                  >
-                    <FiCalendar className="mr-2" /> Select Date
-                  </motion.button>
-                }
-              />
-            </div>
-          </div>
+        const filteredByTeacher = filteredBySubject.filter((routine) =>
+            filterTeacher ? (routine[9] && routine[9].toLowerCase().includes(filterTeacher.toLowerCase())) : true
+        );
 
-          <AnimatePresence>
-            {showFilter && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3 }}
-                className="mb-8"
-              >
-                <div className="bg-gray-100 p-4 rounded-lg flex items-center">
-                  <input
-                    type="text"
-                    value={filterText}
-                    onChange={handleFilterChange}
-                    placeholder="Search events..."
-                    className="flex-grow p-2 rounded-l-md border-2 border-gray-300 focus:outline-none focus:border-blue-500"
-                  />
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={handleClearFilters}
-                    className="bg-red-500 text-white p-2 rounded-r-md"
-                  >
-                    <FiXCircle size={24} />
-                  </motion.button>
-                </div>
-                {/* Class, Teacher, and Subject filters */}
-                <div className="flex flex-wrap gap-4 mt-4">
-                  <div className="flex-grow">
-                    <label className="text-sm font-medium">Class</label>
-                    <select
-                      value={filterClass}
-                      onChange={(e) => setFilterClass(e.target.value)}
-                      className="w-full p-2 border rounded-md"
+        const filteredByDate = filteredByTeacher.filter((routine) => {
+            if (!selectedDate) return true;
+            const routineDate = new Date(routine[0]);
+            return routineDate.toDateString() === selectedDate.toDateString();
+        });
+
+        // Sorting logic
+        return filteredByDate.sort((a, b) => {
+            const dateA = new Date(a[0]);
+            const dateB = new Date(b[0]);
+
+            if (dateA - dateB !== 0) return dateA - dateB;
+            if (sortClass) return sortClass === 'asc' ? a[2].localeCompare(b[2]) : b[2].localeCompare(a[2]);
+            if (sortTime) return sortTime === 'asc' ? a[1].localeCompare(b[1]) : b[1].localeCompare(a[1]);
+            if (sortSubject) return sortSubject === 'asc' ? a[4].localeCompare(b[4]) : b[4].localeCompare(a[4]);
+
+            return 0;
+        });
+    };
+
+    const sortedRoutines = getRoutinesForWeek(currentWeekIndex);
+
+    // Sorting handlers
+    const handleSortClass = () => setSortClass(sortClass === 'asc' ? 'desc' : 'asc');
+    const handleSortTime = () => setSortTime(sortTime === 'asc' ? 'desc' : 'asc');
+    const handleSortSubject = () => setSortSubject(sortSubject === 'asc' ? 'desc' : 'asc');
+
+    // Dropdown filter handlers
+    const handleFilterClass = (e) => setFilterClass(e.target.value);
+    const handleFilterTime = (e) => setFilterTime(e.target.value);
+    const handleFilterSubject = (e) => setFilterSubject(e.target.value);
+    const handleFilterTeacher = (e) => setFilterTeacher(e.target.value);
+
+    // Get unique dropdown values
+    const uniqueClasses = useMemo(() => [...new Set(routines.map((r) => r[2]))], [routines]);
+    const uniqueTimes = useMemo(() => [...new Set(routines.map((r) => r[1]))], [routines]);
+    const uniqueSubjects = useMemo(() => [...new Set(routines.map((r) => r[4]))], [routines]);
+    const uniqueTeachers = useMemo(() => [...new Set(routines.map((r) => r[9]))], [routines]);
+
+    // Clear Filters function
+    const handleClearFilters = () => {
+        setFilterClass('');
+        setFilterTime('');
+        setFilterSubject('');
+        setFilterTeacher('');
+        setSelectedDate(null);
+    };
+
+    // Navigation for previous and next week
+    const handlePreviousWeek = () => setCurrentWeekIndex(currentWeekIndex - 1);
+    const handleNextWeek = () => setCurrentWeekIndex(currentWeekIndex + 1);
+
+    return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+            <main className="container mx-auto px-4 py-8">
+                <section className="space-y-8">
+                    <div className="text-center mb-12">
+                        <h1 className="text-4xl font-bold text-gray-800 mb-2">Weekly Routine</h1>
+                        <p className="text-gray-600">View and manage weekly classes</p>
+                    </div>
+
+                    {/* Filters Section */}
+                    <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="bg-white rounded-xl shadow-lg p-6 mb-8"
                     >
-                      <option value="">All Classes</option>
-                      {uniqueClasses.map((cls, i) => (
-                        <option key={i} value={cls}>
-                          {cls}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex-grow">
-                    <label className="text-sm font-medium">Teacher</label>
-                    <select
-                      value={filterTeacher}
-                      onChange={(e) => setFilterTeacher(e.target.value)}
-                      className="w-full p-2 border rounded-md"
-                    >
-                      <option value="">All Teachers</option>
-                      {uniqueTeachers.map((teacher, i) => (
-                        <option key={i} value={teacher}>
-                          {teacher}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="flex-grow">
-                    <label className="text-sm font-medium">Subject</label>
-                    <select
-                      value={filterSubject}
-                      onChange={(e) => setFilterSubject(e.target.value)}
-                      className="w-full p-2 border rounded-md"
-                    >
-                      <option value="">All Subjects</option>
-                      {uniqueSubjects.map((subject, i) => (
-                        <option key={i} value={subject}>
-                          {subject}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                            {[ 
+                                { label: 'Class', icon: FiUser, state: filterClass, handler: handleFilterClass, options: uniqueClasses },
+                                { label: 'Time', icon: FiClock, state: filterTime, handler: handleFilterTime, options: uniqueTimes },
+                                { label: 'Subject', icon: FiBook, state: filterSubject, handler: handleFilterSubject, options: uniqueSubjects },
+                                { label: 'Teacher', icon: FiUserCheck, state: filterTeacher, handler: handleFilterTeacher, options: uniqueTeachers }
+                            ].map(({ label, icon: Icon, state, handler, options }, idx) => (
+                                <div key={idx} className="space-y-2">
+                                    <label className="flex items-center text-sm font-medium text-gray-700">
+                                        <Icon className="mr-2 text-purple-500" /> {label}
+                                    </label>
+                                    <select value={state} onChange={handler} className="w-full px-3 py-2 border rounded-lg">
+                                        <option value="">All {label}s</option>
+                                        {options.map((opt, i) => (
+                                            <option key={i} value={opt}>{opt}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            ))}
+                            <div className="space-y-2">
+                                <label className="flex items-center text-sm font-medium text-gray-700">
+                                    <FiCalendar className="mr-2 text-orange-500" /> Date
+                                </label>
+                                <DatePicker
+                                    selected={selectedDate}
+                                    onChange={setSelectedDate}
+                                    className="w-full px-3 py-2 border rounded-lg"
+                                    placeholderText="Select Date"
+                                    dateFormat="yyyy-MM-dd"
+                                />
+                            </div>
+                        </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4">
-            {days.map((day, index) => (
-              <motion.div
-                key={day.toDateString()}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleDayClick(day)}
-                className={`bg-white rounded-lg shadow-md p-4 cursor-pointer ${
-                  selectedDay && selectedDay.toDateString() === day.toDateString() ? "ring-2 ring-blue-500" : ""
-                }`}
-              >
-                <div className="text-center mb-2">
-                  <div className="text-lg font-semibold text-gray-800">
-                    {day.toLocaleDateString("en-US", { weekday: "short" })}
-                  </div>
-                  <div className="text-3xl font-bold text-gray-900">{day.getDate()}</div>
-                </div>
-                {selectedDay && selectedDay.toDateString() === day.toDateString() && dayEvents.length > 0 && (
-                  <motion.ul
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className="mt-2 space-y-2"
-                  >
-                    {dayEvents.map((event) => (
-                      <motion.li
-                        key={event.id}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.3 }}
-                        className="text-sm text-gray-600 flex items-center"
-                      >
-                        <FiClock className="mr-1" /> {event.time} - {event.title}
-                      </motion.li>
-                    ))}
-                  </motion.ul>
-                )}
-              </motion.div>
-            ))}
-          </div>
+                        {/* Clear Filters Button */}
+                        <div className="mt-4 text-right">
+                            <button
+                                onClick={handleClearFilters}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+                            >
+                                <FiXCircle className="inline-block mr-2" />
+                                Clear Filters
+                            </button>
+                        </div>
+                    </motion.div>
+
+                    {/* Week Navigation */}
+                    <div className="flex justify-between items-center mb-4">
+                        <button
+                            onClick={handlePreviousWeek}
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        >
+                            <FiChevronLeft className="inline-block mr-2" />
+                            Previous Week
+                        </button>
+                        <button
+                            onClick={handleNextWeek}
+                            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+                        >
+                            Next Week
+                            <FiChevronRight className="inline-block ml-2" />
+                        </button>
+                    </div>
+
+                    {/* Weekly Routine Table */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 0.5 }}
+                        className="bg-white rounded-xl shadow-lg overflow-hidden"
+                    >
+                        <AnimatePresence>
+                            {sortedRoutines.length > 0 ? (
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full table-auto">
+                                        <thead className="bg-blue-500 text-white">
+                                            <tr>
+                                                {['Day', 'Class Date', 'Time', 'Class', 'Subject', 'Teacher', 'Topic'].map((heading, i) => (
+                                                    <th key={i} className="p-4 text-left">{heading}</th>
+                                                ))}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {sortedRoutines.map((routine, idx) => {
+                                                const routineDate = new Date(routine[0]);
+                                                const dayName = routineDate.toLocaleString('default', { weekday: 'long' });
+                                                const isToday = routineDate.toDateString() === new Date().toDateString(); // Check if it's today
+
+                                                return (
+                                                    <motion.tr
+                                                        key={idx}
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        exit={{ opacity: 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                        className={`border-b hover:bg-gray-100 transition-all duration-200 ${
+                                                            isToday ? 'bg-blue-50' : ''
+                                                        }`}
+                                                    >
+                                                        {/* Explicitly map columns */}
+                                                        <td className="p-4 whitespace-nowrap">{dayName}</td> {/* Day */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[0]}</td> {/* Class Date */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[1]}</td> {/* Time */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[2]}</td> {/* Class */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[4]}</td> {/* Subject */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[9]}</td> {/* Teacher */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[8]}</td> {/* Topic */}
+                                                    </motion.tr>
+                                                );
+                                            })}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                                    <FiFilter className="text-5xl mb-4" />
+                                    <p>No routines found for the selected filters.</p>
+                                </div>
+                            )}
+                        </AnimatePresence>
+                    </motion.div>
+                </section>
+            </main>
         </div>
-      </motion.div>
-    </div>
-  )
-}
+    );
+};
 
 export default WeeklyRoutine;
