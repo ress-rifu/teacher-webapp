@@ -124,7 +124,7 @@ const App = () => {
                     className="text-center mb-12"
                   >
                     <h1 className="text-4xl font-bold text-gray-800 mb-2">Class Schedule</h1>
-                    <p className="text-gray-600">View and manage upcoming classes</p>
+                    <p className="text-gray-600">AFS Academic Program</p>
                   </motion.div>
 
                   {/* Filters Section */}
