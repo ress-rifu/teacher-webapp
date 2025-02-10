@@ -20,11 +20,12 @@ const App = () => {
   const [uniqueTeachers, setUniqueTeachers] = useState([])
   const [uniqueClasses, setUniqueClasses] = useState([])
   const [uniqueSubjects, setUniqueSubjects] = useState([])
+  const API_URL = process.env.REACT_APP_API_URL || 'https://teacher-webapp.onrender.com';
 
   useEffect(() => {
     const fetchRoutines = async () => {
       try {
-        const response = await axios.get('https://teacher-webapp.onrender.com/api/routines')
+        const response = await axios.get(`${API_URL}/api/routines`);
         const routinesData = response.data
 
         const today = new Date()
