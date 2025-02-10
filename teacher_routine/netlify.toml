@@ -1,12 +1,12 @@
 [build]
-  base = "teacher_routine/front"  # The base directory for the frontend code
-  publish = "teacher_routine/front/dist"  # The directory where Vite will output the production build
-  command = "npm install && npm run build"  # The command to build your Vite app
-
+  base = "teacher_routine/front" 
+  publish = "teacher_routine/front/dist"  
+  command = "npm install && npm run build"
+  
 [functions]
-  directory = "teacher_routine/back/netlify/functions"  # Directory for serverless functions (backend)
+  directory = "teacher_routine/back/netlify/functions"
 
 [[redirects]]
   from = "/api/*"
-  to = "/.netlify/functions/server"  # This points to the serverless function endpoint
+  to = "/.netlify/functions/server"
   status = 200
