@@ -1,87 +1,86 @@
-import { useState, useEffect } from "react"
-import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom"
-import RoutineTable from "./components/RoutineTable"
-import WeeklyRoutine from "./components/WeeklyRoutine"
-import axios from "axios"
-import { FiFilter, FiXCircle, FiCalendar, FiClock, FiBook, FiUser, FiHome } from "react-icons/fi"
-import { motion } from "framer-motion"
-import DatePicker from "react-datepicker"
-import "react-datepicker/dist/react-datepicker.css"
+import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
+import RoutineTable from "./components/RoutineTable";
+import WeeklyRoutine from "./components/WeeklyRoutine";
+import axios from "axios";
+import { FiFilter, FiXCircle, FiCalendar, FiClock, FiBook, FiUser, FiHome } from "react-icons/fi";
+import { motion } from "framer-motion";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const App = () => {
-  const [routines, setRoutines] = useState([])
-  const [selectedTeacher, setSelectedTeacher] = useState("")
-  const [selectedClass, setSelectedClass] = useState("")
-  const [selectedSubject, setSelectedSubject] = useState("")
-  const [selectedDate, setSelectedDate] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [routines, setRoutines] = useState([]);
+  const [selectedTeacher, setSelectedTeacher] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const [uniqueTeachers, setUniqueTeachers] = useState([])
-  const [uniqueClasses, setUniqueClasses] = useState([])
-  const [uniqueSubjects, setUniqueSubjects] = useState([])
-  const API_URL = process.env.REACT_APP_API_URL || 'https://teacher-webapp.onrender.com';
+  const [uniqueTeachers, setUniqueTeachers] = useState([]);
+  const [uniqueClasses, setUniqueClasses] = useState([]);
+  const [uniqueSubjects, setUniqueSubjects] = useState([]);
+  const API_URL = process.env.REACT_APP_API_URL || "https://teacher-webapp.onrender.com";
 
   useEffect(() => {
     const fetchRoutines = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/routines`)
-        const routinesData = response.data
+        const response = await axios.get(`${API_URL}/api/routines`);
+        const routinesData = response.data;
 
         // Remove date filtering to get all routines
-        const filteredRoutines = routinesData.slice(1)
+        const filteredRoutines = routinesData.slice(1);
 
         filteredRoutines.sort((a, b) => {
-          const dateA = new Date(a[0])
-          const dateB = new Date(b[0])
-          if (dateA - dateB !== 0) return dateA - dateB
-          return a[1].localeCompare(b[1])
-        })
+          const dateA = new Date(a[0]);
+          const dateB = new Date(b[0]);
+          if (dateA - dateB !== 0) return dateA - dateB;
+          return a[1].localeCompare(b[1]);
+        });
 
-        setRoutines(filteredRoutines)
+        setRoutines(filteredRoutines);
 
         // Extract unique values from all routines
-        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[9]).filter(Boolean))])
-        setUniqueClasses([...new Set(filteredRoutines.map((r) => r[2]).filter(Boolean))])
-        setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))])
+        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[9]).filter(Boolean))]);
+        setUniqueClasses([...new Set(filteredRoutines.map((r) => r[2]).filter(Boolean))]);
+        setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))]);
 
-        setLoading(false)
+        setLoading(false);
       } catch (error) {
-        setError("Failed to load data. Please try again later.")
-        setLoading(false)
+        setError("Failed to load data. Please try again later.");
+        setLoading(false);
       }
-    }
+    };
 
-    fetchRoutines()
-  }, [])
+    fetchRoutines();
+  }, []);
 
   // Updated filtering logic to show all dates by default
   const filteredRoutines = routines.filter((routine) => {
-    if (!routine[0] || !routine[8]) return false
-    const routineDate = new Date(routine[0])
+    if (!routine[0] || !routine[8]) return false;
+    const routineDate = new Date(routine[0]);
 
     return (
       (!selectedTeacher || routine[9]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
       (!selectedClass || routine[2]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
       (!selectedDate || routineDate.toDateString() === selectedDate.toDateString())
-    )
-  })
+    );
+  });
 
   const sortedRoutines = [...filteredRoutines].sort((a, b) => {
-    const dateA = new Date(a[0])
-    const dateB = new Date(b[0])
-    return dateA - dateB || a[1].localeCompare(b[1])
-  })
+    const dateA = new Date(a[0]);
+    const dateB = new Date(b[0]);
+    return dateA - dateB || a[1].localeCompare(b[1]);
+  });
 
   const handleRemoveFilters = () => {
-    setSelectedTeacher("")
-    setSelectedClass("")
-    setSelectedSubject("")
-    setSelectedDate(null)
-  }
+    setSelectedTeacher("");
+    setSelectedClass("");
+    setSelectedSubject("");
+    setSelectedDate(null);
+  };
 
-  // Rest of the component remains the same
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
@@ -94,11 +93,17 @@ const App = () => {
             </Link>
 
             <div className="flex space-x-4">
-              <Link to="/" className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+              <Link
+                to="/"
+                className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+              >
                 <FiCalendar className="mr-2 text-blue-600" />
                 <span className="text-gray-700">Schedule</span>
               </Link>
-              <Link to="/weekly" className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors">
+              <Link
+                to="/weekly"
+                className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+              >
                 <FiClock className="mr-2 text-purple-600" />
                 <span className="text-gray-700">Weekly View</span>
               </Link>
@@ -240,7 +245,9 @@ const App = () => {
                       </div>
                     ) : (
                       <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <RoutineTable routines={sortedRoutines} />
+                        <div className="overflow-x-auto">
+                          <RoutineTable routines={sortedRoutines} />
+                        </div>
                       </div>
                     )}
                   </motion.div>
@@ -271,7 +278,7 @@ const App = () => {
         </footer>
       </div>
     </Router>
-  )
-}
+  );
+};
 
 export default App;
