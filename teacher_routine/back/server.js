@@ -39,5 +39,5 @@ app.get('/api/routines', async (req, res) => {
 
 // Start the server
 app.listen(port, () => {
-    console.log('Server running');
+    console.log('Server is running');
 });

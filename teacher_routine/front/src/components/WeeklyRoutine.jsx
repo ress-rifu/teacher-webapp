@@ -16,13 +16,13 @@ const WeeklyRoutine = ({ routines = [] }) => {
     const [filterClass, setFilterClass] = useState('');
     const [filterTime, setFilterTime] = useState('');
     const [filterSubject, setFilterSubject] = useState('');
-    const [filterTeacher, setFilterTeacher] = useState(''); // New teacher filter
+    const [filterTeacher, setFilterTeacher] = useState('');
     const [selectedDate, setSelectedDate] = useState(null);
 
     // Calculate start and end of the week (Saturday - Thursday)
     const getSaturdayToThursdayRange = (weekIndex) => {
         const currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + (weekIndex * 7)); // Adjust the current date based on the week index
+        currentDate.setDate(currentDate.getDate() + (weekIndex * 7));
 
         const startDate = new Date(currentDate);
         startDate.setDate(startDate.getDate() - startDate.getDay() + 6); // Saturday
@@ -41,7 +41,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
         const filteredRoutines = routines.filter((routine) => {
             if (!routine[0] || !routine[0].trim()) return false;
 
-            const routineDate = new Date(routine[0]); // Assuming Class Date is at index 0
+            const routineDate = new Date(routine[0]);
             return routineDate >= weekStart && routineDate <= weekEnd;
         });
 
@@ -212,22 +212,30 @@ const WeeklyRoutine = ({ routines = [] }) => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {sortedRoutines.map((routine, idx) => (
-                                                <motion.tr
-                                                    key={idx}
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    transition={{ duration: 0.3 }}
-                                                    className="border-b hover:bg-gray-100 transition-all duration-200"
-                                                >
-                                                    {routine.slice(0, 7).map((cell, i) => (
-                                                        <td key={i} className="p-4 whitespace-nowrap">{cell}</td>
-                                                    ))}
-                                                    {/* Ensure teacher's name is included */}
-                                                    <td className="p-4 whitespace-nowrap">{routine[9]}</td>
-                                                </motion.tr>
-                                            ))}
+                                            {sortedRoutines.map((routine, idx) => {
+                                                const routineDate = new Date(routine[0]);
+                                                const dayName = routineDate.toLocaleString('default', { weekday: 'long' });
+
+                                                return (
+                                                    <motion.tr
+                                                        key={idx}
+                                                        initial={{ opacity: 0 }}
+                                                        animate={{ opacity: 1 }}
+                                                        exit={{ opacity: 0 }}
+                                                        transition={{ duration: 0.3 }}
+                                                        className="border-b hover:bg-gray-100 transition-all duration-200"
+                                                    >
+                                                        {/* Explicitly map columns */}
+                                                        <td className="p-4 whitespace-nowrap">{dayName}</td> {/* Day */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[0]}</td> {/* Class Date */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[1]}</td> {/* Time */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[2]}</td> {/* Class */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[4]}</td> {/* Subject */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[9]}</td> {/* Teacher */}
+                                                        <td className="p-4 whitespace-nowrap">{routine[8]}</td> {/* Topic */}
+                                                    </motion.tr>
+                                                );
+                                            })}
                                         </tbody>
                                     </table>
                                 </div>
