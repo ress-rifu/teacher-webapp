@@ -1,7 +1,7 @@
 [build]
   base = "front"  # Set to 'front' because the frontend code is in that directory
-  publish = "front/build"  # This is where Netlify will deploy the frontend
-  command = "npm install && npm run build"  # Build command for frontend
+  publish = "front/dist"  # The path to your build output folder
+  command = "npm install && npm run build"  # The build command for your frontend
 
 [functions]
   directory = "back/netlify/functions"  # Path to your serverless functions
