@@ -25,12 +25,13 @@ const App = () => {
   useEffect(() => {
     const fetchRoutines = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/routines`);
+        const response = await axios.get(`${API_URL}/api/routines`)
         const routinesData = response.data
 
         const today = new Date()
         today.setHours(0, 0, 0, 0)
 
+        // Filter out past routines
         const filteredRoutines = routinesData.slice(1).filter((routine) => {
           const routineDate = new Date(routine[0])
           return routineDate >= today
@@ -60,11 +61,13 @@ const App = () => {
     fetchRoutines()
   }, [])
 
+  // Adjusted filtering logic to prevent showing past routines
   const filteredRoutines = routines.filter((routine) => {
     if (!routine[0] || !routine[8]) return false
     const routineDate = new Date(routine[0])
 
     return (
+      (routineDate >= new Date() || (selectedDate && routineDate.toDateString() === selectedDate.toDateString())) &&
       (!selectedTeacher || routine[9]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
       (!selectedClass || routine[2]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
@@ -250,7 +253,6 @@ const App = () => {
                 </section>
               }
             />
-
             <Route path="/weekly" element={<WeeklyRoutine routines={routines} />} />
           </Routes>
         </main>
@@ -279,4 +281,3 @@ const App = () => {
 }
 
 export default App;
-
