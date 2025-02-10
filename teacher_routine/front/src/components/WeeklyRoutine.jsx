@@ -5,7 +5,7 @@ import { FiFilter, FiXCircle, FiCalendar, FiClock, FiBook, FiUser, FiUserCheck, 
 import { motion, AnimatePresence } from 'framer-motion';
 
 const WeeklyRoutine = ({ routines = [] }) => {
-    const [currentWeekIndex, setCurrentWeekIndex] = useState(0);
+    const [currentWeekIndex, setCurrentWeekIndex] = useState(0); // Default to current week
 
     // Sorting states
     const [sortClass, setSortClass] = useState(null);
@@ -22,7 +22,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
     // Calculate start and end of the week (Saturday - Thursday)
     const getSaturdayToThursdayRange = (weekIndex) => {
         const currentDate = new Date();
-        currentDate.setDate(currentDate.getDate() + (weekIndex * 7));
+        currentDate.setDate(currentDate.getDate() + (weekIndex * 7)); // Adjust the current date based on the week index
 
         const startDate = new Date(currentDate);
         startDate.setDate(startDate.getDate() - startDate.getDay() + 6); // Saturday
@@ -215,6 +215,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
                                             {sortedRoutines.map((routine, idx) => {
                                                 const routineDate = new Date(routine[0]);
                                                 const dayName = routineDate.toLocaleString('default', { weekday: 'long' });
+                                                const isToday = routineDate.toDateString() === new Date().toDateString(); // Check if it's today
 
                                                 return (
                                                     <motion.tr
@@ -223,7 +224,9 @@ const WeeklyRoutine = ({ routines = [] }) => {
                                                         animate={{ opacity: 1 }}
                                                         exit={{ opacity: 0 }}
                                                         transition={{ duration: 0.3 }}
-                                                        className="border-b hover:bg-gray-100 transition-all duration-200"
+                                                        className={`border-b hover:bg-gray-100 transition-all duration-200 ${
+                                                            isToday ? 'bg-blue-50' : ''
+                                                        }`}
                                                     >
                                                         {/* Explicitly map columns */}
                                                         <td className="p-4 whitespace-nowrap">{dayName}</td> {/* Day */}
