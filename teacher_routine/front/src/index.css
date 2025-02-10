@@ -1,0 +1,119 @@
+/* teacher-routine-frontend/src/index.css */
+
+/* Tailwind's base styles */
+@tailwind base;
+
+/* Tailwind's component styles */
+@tailwind components;
+
+/* Tailwind's utility classes */
+@tailwind utilities;
+
+/* Custom styles for the project */
+
+/* Apply a background color and font styling for the body */
+body {
+  @apply bg-gray-100 font-sans;
+}
+
+/* Header styling */
+header {
+  @apply p-4 bg-blue-600 text-white;
+}
+
+/* Header title styling */
+header h1 {
+  @apply text-xl font-bold;
+}
+
+/* Filter panel styling */
+input[type="text"] {
+  @apply p-2 border rounded-md shadow-sm w-full sm:w-48; /* Make inputs full width on mobile */
+}
+
+/* Container for filter inputs */
+.filter-panel {
+  @apply flex flex-wrap space-x-4 mb-4;
+}
+
+/* Table styles for displaying routine data */
+table {
+  @apply min-w-full table-auto mt-6 border-collapse;
+}
+
+/* Table header */
+th {
+  @apply p-3 text-left bg-blue-500 text-white;
+}
+
+/* Table rows */
+td {
+  @apply p-3 border-b border-gray-300;
+}
+
+/* Table row hover effect */
+tr:hover {
+  @apply bg-gray-200;
+}
+
+/* Styling for the filter panel and form */
+.filter-panel input[type="text"] {
+  @apply p-2 border rounded-md shadow-sm;
+}
+
+/* Responsive design for mobile */
+@media (max-width: 768px) {
+  /* Adjust filter panel layout for smaller screens */
+  .filter-panel {
+    @apply flex-col;
+  }
+
+  /* Ensure inputs take full width on mobile */
+  .filter-panel input[type="text"] {
+    @apply w-full mb-2;
+  }
+  
+  /* Adjust table layout for smaller screens */
+  table {
+    @apply w-full;
+  }
+
+  th, td {
+    @apply p-2 text-sm; /* Smaller text size on mobile */
+  }
+}
+
+/* Custom table styling for even and odd rows */
+tbody tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+tbody tr:nth-child(odd) {
+  @apply bg-white;
+}
+
+/* Adding styles to the page container */
+.main-container {
+  @apply p-6;
+}
+
+/* Button styles for actions like Export/Print */
+button {
+  @apply bg-blue-600 text-white p-2 rounded-md mt-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+/* Container for the app */
+.app-container {
+  @apply min-h-screen bg-gray-100;
+}
+
+/* Style for the filter button */
+button.filter-btn {
+  @apply bg-blue-600 text-white rounded-md px-4 py-2;
+}
+
+/* Add spacing between elements for better layout */
+.spacing {
+  @apply mb-6;
+}
+
