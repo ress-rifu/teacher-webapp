@@ -1,10 +1,10 @@
 [build]
-  base = "front"  # The base directory for the frontend code
-  publish = "front/dist"  # The directory where Vite will output the production build
+  base = "teacher_routine/front"  # The base directory for the frontend code
+  publish = "teacher_routine/front/dist"  # The directory where Vite will output the production build
   command = "npm install && npm run build"  # The command to build your Vite app
 
 [functions]
-  directory = "back/netlify/functions"  # Directory for serverless functions (backend)
+  directory = "teacher_routine/back/netlify/functions"  # Directory for serverless functions (backend)
 
 [[redirects]]
   from = "/api/*"
