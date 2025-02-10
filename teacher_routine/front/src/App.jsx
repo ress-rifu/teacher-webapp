@@ -24,7 +24,7 @@ const App = () => {
   useEffect(() => {
     const fetchRoutines = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/routines")
+        const response = await axios.get('/api/routines')
         const routinesData = response.data
 
         const today = new Date()
