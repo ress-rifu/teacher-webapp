@@ -30,15 +30,15 @@ const WeeklyRoutine = ({ routines = [] }) => {
     const currentDate = new Date()
     const dayOfWeek = currentDate.getDay() // 0 = Sunday, 6 = Saturday
     const diffToSaturday = dayOfWeek === 6 ? 0 : 6 - dayOfWeek - 1 // Days to previous Saturday
-
+  
     const startDate = new Date(currentDate)
     startDate.setDate(currentDate.getDate() - diffToSaturday + (weekIndex * 7)) // Adjust for week index
     startDate.setHours(0, 0, 0, 0) // Start of Saturday
-
+  
     const endDate = new Date(startDate)
-    endDate.setDate(startDate.getDate() + 4) // Thursday (4 days after Saturday)
+    endDate.setDate(startDate.getDate() + 5) // Thursday (5 days after Saturday)
     endDate.setHours(23, 59, 59, 999) // End of Thursday
-
+  
     return { startDate, endDate }
   }
 
