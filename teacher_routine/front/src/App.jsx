@@ -86,30 +86,31 @@ const App = () => {
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
         {/* Navigation */}
         <nav className="bg-white/80 backdrop-blur-md border-b border-blue-100 sticky top-0 z-50">
-          <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center">
-            <Link to="/" className="flex items-center space-x-3 mb-4 md:mb-0">
-              <FiHome className="text-2xl text-blue-600" />
-              <span className="text-xl font-bold text-gray-800">ACS Future School</span>
-            </Link>
+  <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center">
+    {/* Updated Home Link with Logo */}
+    <Link to="/" className="flex items-center space-x-3 mb-4 md:mb-0">
+      <img src="/logo.svg" alt="ACS Future School Logo" className="h-10" /> {/* Adjust height as needed */}
+      <span className="text-xl font-bold text-gray-800">ACS Future School</span>
+    </Link>
 
-            <div className="flex space-x-4">
-              <Link
-                to="/"
-                className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-              >
-                <FiCalendar className="mr-2 text-blue-600" />
-                <span className="text-gray-700">Schedule</span>
-              </Link>
-              <Link
-                to="/weekly"
-                className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-              >
-                <FiClock className="mr-2 text-purple-600" />
-                <span className="text-gray-700">Weekly View</span>
-              </Link>
-            </div>
-          </div>
-        </nav>
+    <div className="flex space-x-4">
+      <Link
+        to="/"
+        className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+      >
+        <FiCalendar className="mr-2 text-blue-600" />
+        <span className="text-gray-700">Schedule</span>
+      </Link>
+      <Link
+        to="/weekly"
+        className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
+      >
+        <FiClock className="mr-2 text-purple-600" />
+        <span className="text-gray-700">Weekly View</span>
+      </Link>
+    </div>
+  </div>
+</nav>
 
         <main className="container mx-auto px-4 py-8">
           <Routes>
