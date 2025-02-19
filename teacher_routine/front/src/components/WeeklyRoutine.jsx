@@ -74,8 +74,8 @@ const WeeklyRoutine = ({ routines = [] }) => {
 
     const filteredByTeacher = filteredBySubject.filter((routine) =>
       filterTeacher
-        ? routine[9] &&
-          routine[9].toLowerCase().includes(filterTeacher.toLowerCase())
+        ? routine[10] &&
+          routine[10].toLowerCase().includes(filterTeacher.toLowerCase())
         : true
     );
 
