@@ -1,5 +1,3 @@
-// teacher-routine-backend/server.js
-
 const express = require('express');
 const cors = require('cors');
 const { google } = require('googleapis');
@@ -37,10 +35,12 @@ app.get('/api/routines', async (req, res) => {
     // Otherwise, fetch fresh data from Google Sheets
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Dashboard!B:L', // Columns B to K (Class Date to Teacher)
+      range: 'Dashboard!B:L', // Columns B to L (Class Date to Teacher)
     });
 
     const routines = response.data.values;
+    console.log("Fetched Routines:", routines); // Log the fetched data
+
     // Filter out the first row and any empty rows
     const filteredRoutines = routines.slice(1).filter((routine) => routine[0] && routine[8]);
 
