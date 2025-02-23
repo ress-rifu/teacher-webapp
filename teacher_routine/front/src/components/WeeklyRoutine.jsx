@@ -74,8 +74,8 @@ const WeeklyRoutine = ({ routines = [] }) => {
 
     const filteredByTeacher = filteredBySubject.filter((routine) =>
       filterTeacher
-        ? routine[10] &&
-          routine[10].toLowerCase().includes(filterTeacher.toLowerCase())
+        ? routine[11] &&
+          routine[11].toLowerCase().includes(filterTeacher.toLowerCase())
         : true
     );
 
@@ -146,7 +146,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
     [routines]
   );
   const uniqueTeachers = useMemo(
-    () => [...new Set(routines.map((r) => r[9]))],
+    () => [...new Set(routines.map((r) => r[11]))],
     [routines]
   );
 
