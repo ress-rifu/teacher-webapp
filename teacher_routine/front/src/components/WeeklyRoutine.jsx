@@ -74,8 +74,8 @@ const WeeklyRoutine = ({ routines = [] }) => {
 
     const filteredByTeacher = filteredBySubject.filter((routine) =>
       filterTeacher
-        ? routine[12] &&
-          routine[12].toLowerCase().includes(filterTeacher.toLowerCase())
+        ? routine[10] &&
+          routine[10].toLowerCase().includes(filterTeacher.toLowerCase())
         : true
     );
 
@@ -315,7 +315,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
                             <td className="p-4 whitespace-nowrap">{routine[1]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[2]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[4]}</td>
-                            <td className="p-4 whitespace-nowrap">{routine[9]}</td>
+                            <td className="p-4 whitespace-nowrap">{routine[10]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[8]}</td>
                           </motion.tr>
                         );
