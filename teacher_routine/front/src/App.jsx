@@ -13,7 +13,8 @@ const App = () => {
   const [selectedTeacher, setSelectedTeacher] = useState("");
   const [selectedClass, setSelectedClass] = useState("");
   const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [startDate, setStartDate] = useState(null);
+  const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -41,7 +42,7 @@ const App = () => {
         setRoutines(filteredRoutines);
 
         // Extract unique values from all routines
-        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[10]).filter(Boolean))]); // Updated to index 10
+        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[11]).filter(Boolean))]); // Updated to index 11
         setUniqueClasses([...new Set(filteredRoutines.map((r) => r[2]).filter(Boolean))]);
         setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))]);
 
@@ -61,10 +62,11 @@ const App = () => {
     const routineDate = new Date(routine[0]);
 
     return (
-      (!selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase())) && // Updated to index 10
+      (!selectedTeacher || routine[11]?.toLowerCase().includes(selectedTeacher.toLowerCase())) && // Updated to index 11
       (!selectedClass || routine[2]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
-      (!selectedDate || routineDate.toDateString() === selectedDate.toDateString())
+      (!startDate || routineDate >= startDate) && // Check if routine date is after or equal to start date
+      (!endDate || routineDate <= endDate) // Check if routine date is before or equal to end date
     );
   });
 
@@ -78,7 +80,8 @@ const App = () => {
     setSelectedTeacher("");
     setSelectedClass("");
     setSelectedSubject("");
-    setSelectedDate(null);
+    setStartDate(null);
+    setEndDate(null);
   };
 
   return (
@@ -210,15 +213,31 @@ const App = () => {
                       <div className="space-y-2">
                         <label className="flex items-center text-sm font-medium text-gray-700">
                           <FiCalendar className="mr-2 text-orange-500" />
-                          Date
+                          Date Range
                         </label>
-                        <DatePicker
-                          selected={selectedDate}
-                          onChange={setSelectedDate}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                          placeholderText="Select Date"
-                          dateFormat="yyyy-MM-dd"
-                        />
+                        <div className="flex space-x-2">
+                          <DatePicker
+                            selected={startDate}
+                            onChange={(date) => setStartDate(date)}
+                            selectsStart
+                            startDate={startDate}
+                            endDate={endDate}
+                            placeholderText="Start Date"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                            dateFormat="yyyy-MM-dd"
+                          />
+                          <DatePicker
+                            selected={endDate}
+                            onChange={(date) => setEndDate(date)}
+                            selectsEnd
+                            startDate={startDate}
+                            endDate={endDate}
+                            minDate={startDate}
+                            placeholderText="End Date"
+                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                            dateFormat="yyyy-MM-dd"
+                          />
+                        </div>
                       </div>
                     </div>
                   </motion.div>
