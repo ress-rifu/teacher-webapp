@@ -39,7 +39,7 @@ const App = () => {
 
         setRoutines(filteredRoutines);
 
-        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[11]).filter(Boolean))]);
+        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[10]).filter(Boolean))]);
         setUniqueClasses([...new Set(filteredRoutines.map((r) => r[2]).filter(Boolean))]);
         setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))]);
 
@@ -58,7 +58,7 @@ const App = () => {
     const routineDate = new Date(routine[0]);
 
     return (
-      (!selectedTeacher || routine[11]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
+      (!selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
       (!selectedClass || routine[2]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
       (!startDate || routineDate >= startDate) &&
