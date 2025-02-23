@@ -29,20 +29,17 @@ const App = () => {
         const response = await axios.get(`${API_URL}/api/routines`);
         const routinesData = response.data;
 
-        // Remove date filtering to get all routines
         const filteredRoutines = routinesData.slice(1);
 
         filteredRoutines.sort((a, b) => {
           const dateA = new Date(a[0]);
           const dateB = new Date(b[0]);
-          if (dateA - dateB !== 0) return dateA - dateB;
-          return a[1].localeCompare(b[1]);
+          return dateA - dateB || a[1].localeCompare(b[1]);
         });
 
         setRoutines(filteredRoutines);
 
-        // Extract unique values from all routines
-        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[11]).filter(Boolean))]); // Updated to index 11
+        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[11]).filter(Boolean))]);
         setUniqueClasses([...new Set(filteredRoutines.map((r) => r[2]).filter(Boolean))]);
         setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))]);
 
@@ -56,17 +53,16 @@ const App = () => {
     fetchRoutines();
   }, []);
 
-  // Updated filtering logic to show all dates by default
   const filteredRoutines = routines.filter((routine) => {
     if (!routine[0] || !routine[8]) return false;
     const routineDate = new Date(routine[0]);
 
     return (
-      (!selectedTeacher || routine[11]?.toLowerCase().includes(selectedTeacher.toLowerCase())) && // Updated to index 11
+      (!selectedTeacher || routine[11]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
       (!selectedClass || routine[2]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
-      (!startDate || routineDate >= startDate) && // Check if routine date is after or equal to start date
-      (!endDate || routineDate <= endDate) // Check if routine date is before or equal to end date
+      (!startDate || routineDate >= startDate) &&
+      (!endDate || routineDate <= endDate)
     );
   });
 
@@ -87,12 +83,10 @@ const App = () => {
   return (
     <Router>
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-        {/* Navigation */}
         <nav className="bg-white/80 backdrop-blur-md border-b border-blue-100 sticky top-0 z-50">
           <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center">
-            {/* Updated Home Link with Logo */}
             <Link to="/" className="flex items-center space-x-3 mb-4 md:mb-0">
-              <img src="/logo.svg" alt="ACS Future School Logo" className="h-10" /> {/* Adjust height as needed */}
+              <img src="/logo.svg" alt="ACS Future School Logo" className="h-10" />
               <span className="text-xl font-bold text-gray-800">ACS Future School</span>
             </Link>
 
@@ -131,7 +125,6 @@ const App = () => {
                     <p className="text-gray-600">AFS Academic Program</p>
                   </motion.div>
 
-                  {/* Filters Section */}
                   <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -211,11 +204,15 @@ const App = () => {
                       </div>
 
                       <div className="space-y-2">
-                        <label className="flex items-center text-sm font-medium text-gray-700">
+                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
                           <FiCalendar className="mr-2 text-orange-500" />
                           Date Range
                         </label>
-                        <div className="flex space-x-2">
+                        <motion.div
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="flex flex-col gap-3"
+                        >
                           <DatePicker
                             selected={startDate}
                             onChange={(date) => setStartDate(date)}
@@ -223,8 +220,12 @@ const App = () => {
                             startDate={startDate}
                             endDate={endDate}
                             placeholderText="Start Date"
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                            dateFormat="yyyy-MM-dd"
+                            className="w-full px-4 py-2.5 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                            dateFormat="dd/MM/yyyy"
+                            isClearable
+                            clearButtonClassName="after:content-['×'] after:text-2xl after:text-orange-500"
+                            showIcon
+                            icon={<FiCalendar className="text-gray-400" />}
                           />
                           <DatePicker
                             selected={endDate}
@@ -234,15 +235,18 @@ const App = () => {
                             endDate={endDate}
                             minDate={startDate}
                             placeholderText="End Date"
-                            className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                            dateFormat="yyyy-MM-dd"
+                            className="w-full px-4 py-2.5 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
+                            dateFormat="dd/MM/yyyy"
+                            isClearable
+                            clearButtonClassName="after:content-['×'] after:text-2xl after:text-orange-500"
+                            showIcon
+                            icon={<FiCalendar className="text-gray-400" />}
                           />
-                        </div>
+                        </motion.div>
                       </div>
                     </div>
                   </motion.div>
 
-                  {/* Content Section */}
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
