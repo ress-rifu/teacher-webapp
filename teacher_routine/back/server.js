@@ -15,38 +15,20 @@ app.use(cors({
 // Set up Google Sheets API client
 const sheets = google.sheets({ version: 'v4', auth: process.env.GOOGLE_SHEET_API_KEY });
 
-// In-memory cache configuration
-let cache = {
-  data: null,
-  timestamp: 0,
-};
-const CACHE_DURATION = 60 * 1000; // Cache duration in milliseconds (e.g., 60 seconds)
-
 // Define the /api/routines endpoint
 app.get('/api/routines', async (req, res) => {
   try {
-    const now = Date.now();
-
-    // If cached data is available and not stale, return it
-    if (cache.data && (now - cache.timestamp < CACHE_DURATION)) {
-      return res.json(cache.data);
-    }
-
-    // Otherwise, fetch fresh data from Google Sheets
+    // Fetch fresh data from Google Sheets
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
       range: 'Dashboard!B:L', // Columns B to L (Class Date to Teacher)
+      majorDimension: 'ROWS', // Fetch data as rows (default)
     });
 
     const routines = response.data.values;
-    console.log("Fetched Routines:", routines); // Log the fetched data
 
-    // Filter out the first row and any empty rows
+    // Filter out the first row (header) and any empty rows
     const filteredRoutines = routines.slice(1).filter((routine) => routine[0] && routine[8]);
-
-    // Update cache
-    cache.data = filteredRoutines;
-    cache.timestamp = now;
 
     // Send the fresh data as the JSON response
     res.json(filteredRoutines);
