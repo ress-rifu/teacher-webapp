@@ -146,7 +146,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
     [routines]
   );
   const uniqueTeachers = useMemo(
-    () => [...new Set(routines.map((r) => r[12]))],
+    () => [...new Set(routines.map((r) => r[10]))],
     [routines]
   );
 
