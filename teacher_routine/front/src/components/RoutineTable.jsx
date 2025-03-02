@@ -14,6 +14,7 @@ const RoutineTable = ({ routines }) => {
                         <th className="p-3">Subject</th>
                         <th className="p-3">Teacher</th>
                         <th className="p-3">Topic</th>
+                        <th className="p-3">Part</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,7 +25,8 @@ const RoutineTable = ({ routines }) => {
                             <td className="p-3">{routine[11]}</td> {/* Column D: Class */}
                             <td className="p-3">{routine[5]}</td> {/* Column F: Subject */}
                             <td className="p-3">{routine[10]}</td> {/* Column K: Teacher */}
-                            <td className="p-3">{routine[6]}</td> {/* Column J: Topic */}
+                            <td className="p-3">{routine[6]}</td>
+                            <td className="p-3">{routine[7]}</td> {/* Column J: Topic */}
                         </tr>
                     ))}
                 </tbody>
