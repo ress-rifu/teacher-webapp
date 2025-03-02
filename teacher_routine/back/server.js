@@ -21,7 +21,7 @@ app.get('/api/routines', async (req, res) => {
     // Fetch fresh data from Google Sheets
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId: process.env.GOOGLE_SHEET_ID,
-      range: 'Dashboard!B:L', // Columns B to L (Class Date to Teacher)
+      range: 'Dashboard!B:N', // Columns B to L (Class Date to Teacher)
       majorDimension: 'ROWS', // Fetch data as rows (default)
     });
 
