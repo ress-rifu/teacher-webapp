@@ -40,7 +40,7 @@ const App = () => {
         setRoutines(filteredRoutines);
 
         setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[10]).filter(Boolean))]);
-        setUniqueClasses([...new Set(filteredRoutines.map((r) => r[2]).filter(Boolean))]);
+        setUniqueClasses([...new Set(filteredRoutines.map((r) => r[11]).filter(Boolean))]);
         setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))]);
 
         setLoading(false);

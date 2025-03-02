@@ -56,7 +56,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
 
     const filteredByClass = filteredRoutines.filter((routine) =>
       filterClass
-        ? routine[2].toLowerCase().includes(filterClass.toLowerCase())
+        ? routine[11].toLowerCase().includes(filterClass.toLowerCase())
         : true
     );
 
@@ -68,7 +68,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
 
     const filteredBySubject = filteredByTime.filter((routine) =>
       filterSubject
-        ? routine[4].toLowerCase().includes(filterSubject.toLowerCase())
+        ? routine[5].toLowerCase().includes(filterSubject.toLowerCase())
         : true
     );
 
@@ -313,10 +313,10 @@ const WeeklyRoutine = ({ routines = [] }) => {
                             <td className="p-4 whitespace-nowrap">{dayName}</td>
                             <td className="p-4 whitespace-nowrap">{routine[0]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[1]}</td>
-                            <td className="p-4 whitespace-nowrap">{routine[2]}</td>
-                            <td className="p-4 whitespace-nowrap">{routine[4]}</td>
+                            <td className="p-4 whitespace-nowrap">{routine[11]}</td>
+                            <td className="p-4 whitespace-nowrap">{routine[5]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[10]}</td>
-                            <td className="p-4 whitespace-nowrap">{routine[8]}</td>
+                            <td className="p-4 whitespace-nowrap">{routine[6]}</td>
                           </motion.tr>
                         );
                       })}
