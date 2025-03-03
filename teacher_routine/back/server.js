@@ -2,8 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const { google } = require('googleapis');
 const dotenv = require('dotenv');
-dotenv.config();
 const axios = require('axios'); // To download the teacher's image
+dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -54,27 +54,27 @@ app.post('/api/generate-slide', async (req, res) => {
 
         // Get teacher image URL
         const teacherImages = {
-          "Abida Purvin Chowdhury": "https://i.postimg.cc/gkTqCV7g/Abida-Purvin-Chowdhury.png",
-          "Al-Fahim": "https://i.postimg.cc/CxnHSZTS/Al-Fahim.png",
-          "Mohammed Suhaib Sinan Aohin": "https://i.postimg.cc/q7fcRk4n/Aohin.png",
-          "Arpita Dhar": "https://i.postimg.cc/QMpQKRdz/Arpita-Dhar.png",
-          "Avik Chakroborty": "https://i.postimg.cc/4dsz6BKx/Avik-Chakroborty.png",
-          "Dipit Saha": "https://i.postimg.cc/RFdwXKfQ/Dipit.png",
-          "Fariha Naznin Tandra": "https://i.postimg.cc/zvfKMvFm/Fariha-Naznin-Tandra.png",
-          "Hridita Chakraborty": "https://i.postimg.cc/kGhKdCT2/Hridita.png",
-          "Kazi Rakibul Hasan": "https://i.postimg.cc/1RWpF0yy/Kazi-Rakibul-Hasan.png",
-          "M Mashrur Hussain": "https://i.postimg.cc/qMz2xt7y/Mashrur.png",
-          "Md Junayed Khan Ryan": "https://i.postimg.cc/NfSmJgyV/Md-Junayed-Khan-Ryan.png",
-          "MD Omor Faruk": "https://i.postimg.cc/5N7nxdXq/MD-Omor-Faruk.png",
-          "Mehrab Hossain Omio": "https://i.postimg.cc/SxHdM67n/Mehrab-Hossain-Omio.png",
-          "Nousheen Tabassum Ahona": "https://i.postimg.cc/q7nLXNjj/Nousheen-Tabassum-Ahona.png",
-          "Rafiad Rahman Mahin": "https://i.postimg.cc/138MXC6x/Rafiad-Rahman-Mahin.png",
-          "Md. Mahfuzur Rahman Rahat": "https://i.postimg.cc/k4myj7H9/Rahat.png",
-          "Samin Zahan Sieyam": "https://i.postimg.cc/PJfQj2hR/Samin-Zahan-Sieyam.png",
-          "Md. Shadman Abrar Khan": "https://i.postimg.cc/gJHHQf9h/Shadman.png",
-          "Shahreen Tabassum Nova": "https://i.postimg.cc/Kj9rvB8v/Shareen-Tabassum-Nova.png",
-          "Tahiya Tahreema Hossain": "https://i.postimg.cc/wxFkV8Q8/Tahiya-Tahreema-Hossain.png",
-          "Tashmiya Hasan": "https://i.postimg.cc/15tr7Cvg/Tashmia.png"
+            "Abida Purvin Chowdhury": "https://i.postimg.cc/gkTqCV7g/Abida-Purvin-Chowdhury.png",
+            "Al-Fahim": "https://i.postimg.cc/CxnHSZTS/Al-Fahim.png",
+            "Mohammed Suhaib Sinan Aohin": "https://i.postimg.cc/q7fcRk4n/Aohin.png",
+            "Arpita Dhar": "https://i.postimg.cc/QMpQKRdz/Arpita-Dhar.png",
+            "Avik Chakroborty": "https://i.postimg.cc/4dsz6BKx/Avik-Chakroborty.png",
+            "Dipit Saha": "https://i.postimg.cc/RFdwXKfQ/Dipit.png",
+            "Fariha Naznin Tandra": "https://i.postimg.cc/zvfKMvFm/Fariha-Naznin-Tandra.png",
+            "Hridita Chakraborty": "https://i.postimg.cc/kGhKdCT2/Hridita.png",
+            "Kazi Rakibul Hasan": "https://i.postimg.cc/1RWpF0yy/Kazi-Rakibul-Hasan.png",
+            "M Mashrur Hussain": "https://i.postimg.cc/qMz2xt7y/Mashrur.png",
+            "Md Junayed Khan Ryan": "https://i.postimg.cc/NfSmJgyV/Md-Junayed-Khan-Ryan.png",
+            "MD Omor Faruk": "https://i.postimg.cc/5N7nxdXq/MD-Omor-Faruk.png",
+            "Mehrab Hossain Omio": "https://i.postimg.cc/SxHdM67n/Mehrab-Hossain-Omio.png",
+            "Nousheen Tabassum Ahona": "https://i.postimg.cc/q7nLXNjj/Nousheen-Tabassum-Ahona.png",
+            "Rafiad Rahman Mahin": "https://i.postimg.cc/138MXC6x/Rafiad-Rahman-Mahin.png",
+            "Md. Mahfuzur Rahman Rahat": "https://i.postimg.cc/k4myj7H9/Rahat.png",
+            "Samin Zahan Sieyam": "https://i.postimg.cc/PJfQj2hR/Samin-Zahan-Sieyam.png",
+            "Md. Shadman Abrar Khan": "https://i.postimg.cc/gJHHQf9h/Shadman.png",
+            "Shahreen Tabassum Nova": "https://i.postimg.cc/Kj9rvB8v/Shareen-Tabassum-Nova.png",
+            "Tahiya Tahreema Hossain": "https://i.postimg.cc/wxFkV8Q8/Tahiya-Tahreema-Hossain.png",
+            "Tashmiya Hasan": "https://i.postimg.cc/15tr7Cvg/Tashmia.png"
         };
 
         const teacherImage = teacherImages[teacher];
