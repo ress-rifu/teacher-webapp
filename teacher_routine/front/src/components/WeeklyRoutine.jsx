@@ -313,7 +313,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
                             <td className="p-4 whitespace-nowrap">{dayName}</td>
                             <td className="p-4 whitespace-nowrap">{routine[0]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[1]}</td>
-                            <td className="p-4 whitespace-nowrap">{routine[11]}</td>
+                            <td className="p-4 whitespace-nowrap">{routine[37]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[5]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[10]}</td>
                             <td className="p-4 whitespace-nowrap">{routine[6]}</td>

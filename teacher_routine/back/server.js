@@ -23,7 +23,7 @@ app.get('/api/routines', async (req, res) => {
         // Fetch data from Google Sheets (Columns B to M)
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: 'Dashboard!B:M', // Columns B to M (Class Date to Class (বাংলা))
+            range: 'Dashboard!B:AM', // Columns B to M (Class Date to Class (বাংলা))
         });
 
         const routines = response.data.values;
