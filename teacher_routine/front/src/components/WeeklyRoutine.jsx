@@ -92,8 +92,8 @@ const WeeklyRoutine = ({ routines = [] }) => {
       if (dateA - dateB !== 0) return dateA - dateB;
       if (sortClass)
         return sortClass === "asc"
-          ? a[2].localeCompare(b[2])
-          : b[2].localeCompare(a[2]);
+          ? a[11].localeCompare(b[11])
+          : b[11].localeCompare(a[11]);
       if (sortTime)
         return sortTime === "asc"
           ? a[1].localeCompare(b[1])
@@ -134,7 +134,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
   const handleFilterTeacher = (e) => setFilterTeacher(e.target.value);
 
   const uniqueClasses = useMemo(
-    () => [...new Set(routines.map((r) => r[2]))],
+    () => [...new Set(routines.map((r) => r[11]))],
     [routines]
   );
   const uniqueTimes = useMemo(

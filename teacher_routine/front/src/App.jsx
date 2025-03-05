@@ -59,7 +59,7 @@ const App = () => {
 
     return (
       (!selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
-      (!selectedClass || routine[2]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
+      (!selectedClass || routine[11]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
       (!startDate || routineDate >= startDate) &&
       (!endDate || routineDate <= endDate)
