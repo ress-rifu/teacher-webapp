@@ -44,7 +44,7 @@ const RoutineTable = ({ routines }) => {
                         <tr key={index} className="border-b hover:bg-gray-200 transition-all duration-300">
                             <td className="p-3">{routine[0]}</td> {/* Class Date */}
                             <td className="p-3">{routine[1]}</td> {/* Time */}
-                            <td className="p-3">{routine[37]}</td> {/* Class */}
+                            <td className="p-3">{routine[36]}</td> {/* Class */}
                             <td className="p-3">{routine[5]}</td> {/* Subject */}
                             <td className="p-3">{routine[10]}</td> {/* Teacher */}
                             <td className="p-3">{routine[6]}</td> {/* Topic */}
