@@ -33,14 +33,13 @@ import {
 } from "@/components/ui/table";
 
 const WeeklyRoutine = ({ routines = [] }) => {
-  const [currentWeekIndex, setCurrentWeekIndex] = useState(0); // Default to current week
-  const [sortClass, setSortClass] = useState(null);
+  const [currentWeekIndex, setCurrentWeekIndex] = useState(0); // Default to current week  const [sortClass, setSortClass] = useState(null);
   const [sortTime, setSortTime] = useState(null);
   const [sortSubject, setSortSubject] = useState(null);
-  const [filterClass, setFilterClass] = useState("");
-  const [filterTime, setFilterTime] = useState("");
-  const [filterSubject, setFilterSubject] = useState("");
-  const [filterTeacher, setFilterTeacher] = useState("");
+  const [filterClass, setFilterClass] = useState("all_classes");
+  const [filterTime, setFilterTime] = useState("all_times");
+  const [filterSubject, setFilterSubject] = useState("all_subjects");
+  const [filterTeacher, setFilterTeacher] = useState("all_teachers");
   const [selectedDate, setSelectedDate] = useState(null);
 
   // Week calculation to show Saturday to Thursday
@@ -70,31 +69,29 @@ const WeeklyRoutine = ({ routines = [] }) => {
 
       const routineDate = new Date(routine[0]);
       return routineDate >= weekStart && routineDate <= weekEnd;
-    });
-
-    const filteredByClass = filteredRoutines.filter((routine) =>
-      filterClass
-        ? routine[11]?.toLowerCase().includes(filterClass.toLowerCase())
-        : true
+    });    const filteredByClass = filteredRoutines.filter((routine) =>
+      filterClass === "all_classes" || !filterClass
+        ? true
+        : routine[11]?.toLowerCase().includes(filterClass.toLowerCase())
     );
 
     const filteredByTime = filteredByClass.filter((routine) =>
-      filterTime
-        ? routine[1]?.toLowerCase().includes(filterTime.toLowerCase())
-        : true
+      filterTime === "all_times" || !filterTime
+        ? true
+        : routine[1]?.toLowerCase().includes(filterTime.toLowerCase())
     );
 
     const filteredBySubject = filteredByTime.filter((routine) =>
-      filterSubject
-        ? routine[5]?.toLowerCase().includes(filterSubject.toLowerCase())
-        : true
+      filterSubject === "all_subjects" || !filterSubject
+        ? true
+        : routine[5]?.toLowerCase().includes(filterSubject.toLowerCase())
     );
 
     const filteredByTeacher = filteredBySubject.filter((routine) =>
-      filterTeacher
-        ? routine[10] &&
+      filterTeacher === "all_teachers" || !filterTeacher
+        ? true
+        : routine[10] &&
           routine[10].toLowerCase().includes(filterTeacher.toLowerCase())
-        : true
     );
 
     const filteredByDate = filteredByTeacher.filter((routine) => {
@@ -236,12 +233,11 @@ const WeeklyRoutine = ({ routines = [] }) => {
   const handleFilterTeacher = (value) => {
     setFilterTeacher(value);
   };
-
   const handleClearFilters = () => {
-    setFilterClass("");
-    setFilterTime("");
-    setFilterSubject("");
-    setFilterTeacher("");
+    setFilterClass("all_classes");
+    setFilterTime("all_times");
+    setFilterSubject("all_subjects");
+    setFilterTeacher("all_teachers");
     setSelectedDate(null);
   };
 
@@ -293,12 +289,11 @@ const WeeklyRoutine = ({ routines = [] }) => {
               <Select 
                 value={filterTime}
                 onValueChange={handleFilterTime}
-              >
-                <SelectTrigger>
+              >                <SelectTrigger>
                   <SelectValue placeholder="All Times" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Times</SelectItem>
+                  <SelectItem value="all_times">All Times</SelectItem>
                   {uniqueTimes.map((time, i) => (
                     <SelectItem key={i} value={time}>
                       {time}
@@ -317,11 +312,10 @@ const WeeklyRoutine = ({ routines = [] }) => {
                 value={filterClass}
                 onValueChange={handleFilterClass}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Classes" />
+                <SelectTrigger>                  <SelectValue placeholder="All Classes" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Classes</SelectItem>
+                  <SelectItem value="all_classes">All Classes</SelectItem>
                   {uniqueClasses.map((cls, i) => (
                     <SelectItem key={i} value={cls}>
                       {cls}
@@ -340,11 +334,10 @@ const WeeklyRoutine = ({ routines = [] }) => {
                 value={filterSubject}
                 onValueChange={handleFilterSubject}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Subjects" />
+                <SelectTrigger>                  <SelectValue placeholder="All Subjects" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Subjects</SelectItem>
+                  <SelectItem value="all_subjects">All Subjects</SelectItem>
                   {uniqueSubjects.map((subject, i) => (
                     <SelectItem key={i} value={subject}>
                       {subject}
@@ -363,11 +356,10 @@ const WeeklyRoutine = ({ routines = [] }) => {
                 value={filterTeacher}
                 onValueChange={handleFilterTeacher}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="All Teachers" />
+                <SelectTrigger>                  <SelectValue placeholder="All Teachers" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">All Teachers</SelectItem>
+                  <SelectItem value="all_teachers">All Teachers</SelectItem>
                   {uniqueTeachers.map((teacher, i) => (
                     <SelectItem key={i} value={teacher}>
                       {teacher}

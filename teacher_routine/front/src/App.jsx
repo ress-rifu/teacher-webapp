@@ -21,9 +21,9 @@ import { ToastProvider } from "./components/ui/toast";
 
 const App = () => {
   const [routines, setRoutines] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState("");
-  const [selectedClass, setSelectedClass] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedTeacher, setSelectedTeacher] = useState("all_teachers");
+  const [selectedClass, setSelectedClass] = useState("all_classes");
+  const [selectedSubject, setSelectedSubject] = useState("all_subjects");
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -62,15 +62,14 @@ const App = () => {
 
     fetchRoutines();
   }, []);
-
   const filteredRoutines = routines.filter((routine) => {
     if (!routine[0]) return false;
     const routineDate = new Date(routine[0]);
 
     return (
-      (!selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
-      (!selectedClass || routine[36]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
-      (!selectedSubject || routine[5]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
+      (selectedTeacher === "all_teachers" || !selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
+      (selectedClass === "all_classes" || !selectedClass || routine[36]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
+      (selectedSubject === "all_subjects" || !selectedSubject || routine[5]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
       (!startDate || routineDate >= startDate) &&
       (!endDate || routineDate <= endDate)
     );
@@ -81,11 +80,10 @@ const App = () => {
     const dateB = new Date(b[0]);
     return dateA - dateB || a[1].localeCompare(b[1]);
   });
-
   const handleRemoveFilters = () => {
-    setSelectedTeacher("");
-    setSelectedClass("");
-    setSelectedSubject("");
+    setSelectedTeacher("all_teachers");
+    setSelectedClass("all_classes");
+    setSelectedSubject("all_subjects");
     setStartDate(null);
     setEndDate(null);
   };
@@ -167,12 +165,11 @@ const App = () => {
                               <Select 
                                 value={selectedTeacher} 
                                 onValueChange={setSelectedTeacher}
-                              >
-                                <SelectTrigger>
+                              >                                <SelectTrigger>
                                   <SelectValue placeholder="All Teachers" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">All Teachers</SelectItem>
+                                  <SelectItem value="all_teachers">All Teachers</SelectItem>
                                   {uniqueTeachers.map((teacher) => (
                                     <SelectItem key={teacher} value={teacher}>
                                       {teacher}
@@ -192,10 +189,9 @@ const App = () => {
                                 onValueChange={setSelectedSubject}
                               >
                                 <SelectTrigger>
-                                  <SelectValue placeholder="All Subjects" />
-                                </SelectTrigger>
+                                  <SelectValue placeholder="All Subjects" />                                </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">All Subjects</SelectItem>
+                                  <SelectItem value="all_subjects">All Subjects</SelectItem>
                                   {uniqueSubjects.map((subject) => (
                                     <SelectItem key={subject} value={subject}>
                                       {subject}
@@ -213,12 +209,11 @@ const App = () => {
                               <Select 
                                 value={selectedClass} 
                                 onValueChange={setSelectedClass}
-                              >
-                                <SelectTrigger>
+                              >                                <SelectTrigger>
                                   <SelectValue placeholder="All Classes" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="">All Classes</SelectItem>
+                                  <SelectItem value="all_classes">All Classes</SelectItem>
                                   {uniqueClasses.map((cls) => (
                                     <SelectItem key={cls} value={cls}>
                                       {cls}
