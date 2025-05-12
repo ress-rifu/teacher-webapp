@@ -31,7 +31,7 @@ const App = () => {
   const [uniqueTeachers, setUniqueTeachers] = useState([]);
   const [uniqueClasses, setUniqueClasses] = useState([]);
   const [uniqueSubjects, setUniqueSubjects] = useState([]);
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+  const API_URL = import.meta.env.VITE_API_URL || "https://teacher-webapp.onrender.com";
 
   useEffect(() => {
     const fetchRoutines = async () => {
