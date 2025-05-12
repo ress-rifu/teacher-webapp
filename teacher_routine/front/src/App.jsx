@@ -93,13 +93,13 @@ const App = () => {
             <div className="container flex h-16 items-center justify-between">
               <Link to="/" className="flex items-center gap-3">
                 <img src="/logo.svg" alt="ACS Future School Logo" className="h-10 w-auto" />
-                <span className="font-semibold text-lg hidden md:inline-block text-gray-800">ACS Future School</span>
+                <span className="font-semibold text-xl hidden md:inline-block bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent">ACS Future School</span>
               </Link>
 
               <nav className="flex items-center gap-4">
                 <Link
                   to="/"
-                  className="text-sm flex items-center font-medium text-gray-600 transition-colors hover:text-primary"
+                  className="text-sm flex items-center font-medium text-gray-600 transition-colors hover:text-indigo-600 bg-gray-50 hover:bg-indigo-50 px-4 py-2 rounded-md"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
                   <span>Class Schedule</span>
@@ -118,8 +118,13 @@ const App = () => {
                       transition={{ duration: 0.5 }}
                       className="text-center mb-8"
                     >
-                      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">Class Schedule</h1>
-                      <p className="text-gray-500 mt-2 text-lg">ACS Future School Academic Program</p>
+                      <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-indigo-600 to-blue-600 bg-clip-text text-transparent">
+                        Class Schedule
+                      </h1>
+                      <p className="text-gray-500 mt-2 text-lg">
+                        ACS Future School Academic Program
+                      </p>
+                      <div className="w-20 h-1 bg-gradient-to-r from-indigo-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
                     </motion.div>
 
                     <motion.div
@@ -127,94 +132,103 @@ const App = () => {
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                      <Card className="shadow-lg border-0 rounded-lg overflow-hidden">
-                        <CardHeader className="pb-4 bg-slate-50 border-b">
-                          <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-bold flex items-center text-gray-800">
-                              <Filter className="h-5 w-5 mr-3 text-blue-600" />
-                              Filters
-                            </CardTitle>
+                      <Card className="shadow-md border border-gray-100 rounded-xl overflow-hidden">
+                        <CardHeader className="pb-4 bg-gradient-to-r from-blue-50 to-indigo-50">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                              <CardTitle className="text-xl font-bold flex items-center text-gray-800">
+                                <Filter className="h-5 w-5 mr-3 text-blue-600" />
+                                Filter Options
+                              </CardTitle>
+                              <CardDescription className="text-gray-600 mt-2 ml-8">
+                                Customize your view with the filters below
+                              </CardDescription>
+                            </div>
                             <Button
                               onClick={handleRemoveFilters}
                               variant="outline"
                               size="sm"
-                              className="text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors border border-gray-200"
+                              className="bg-white text-gray-700 hover:text-red-600 hover:border-red-200 transition-colors border border-gray-200 shadow-sm"
                             >
                               <X className="h-4 w-4 mr-2" />
-                              Clear Filters
+                              Reset Filters
                             </Button>
                           </div>
-                          <CardDescription className="text-gray-500 mt-2">
-                            Filter schedules by teacher, subject, class, or date range
-                          </CardDescription>
                         </CardHeader>
-                        <CardContent className="pt-6 pb-6 bg-white">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium text-gray-700">
-                                <User className="h-4 w-4 mr-2 text-blue-600" />
+                        <CardContent className="pt-6 pb-8 bg-white px-6">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm">
+                              <Label className="flex items-center text-sm font-medium text-gray-800">
+                                <User className="h-4 w-4 mr-2 text-indigo-600" />
                                 Teacher
                               </Label>
                               <Select 
                                 value={selectedTeacher} 
                                 onValueChange={setSelectedTeacher}
                               >
-                                <SelectTrigger className="h-10 w-full bg-white border-gray-300 hover:border-blue-500 focus:border-blue-500">
+                                <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-indigo-300 focus:border-indigo-400 shadow-sm">
                                   <SelectValue placeholder="All Teachers" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="all_teachers">All Teachers</SelectItem>
+                                <SelectContent className="bg-white border border-gray-200 shadow-md">
+                                  <SelectItem value="all_teachers" className="text-gray-800 focus:bg-indigo-50 focus:text-indigo-700">All Teachers</SelectItem>
                                   {uniqueTeachers.map((teacher) => (
-                                    <SelectItem key={teacher} value={teacher}>
+                                    <SelectItem key={teacher} value={teacher} className="text-gray-700 focus:bg-indigo-50 focus:text-indigo-700">
                                       {teacher}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
-                            </div>                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium text-gray-700">
-                                <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
+                            </div>
+                            
+                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm">
+                              <Label className="flex items-center text-sm font-medium text-gray-800">
+                                <BookOpen className="h-4 w-4 mr-2 text-indigo-600" />
                                 Subject
                               </Label>
                               <Select 
                                 value={selectedSubject} 
                                 onValueChange={setSelectedSubject}
                               >
-                                <SelectTrigger className="h-10 w-full bg-white border-gray-300 hover:border-blue-500 focus:border-blue-500">
+                                <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-indigo-300 focus:border-indigo-400 shadow-sm">
                                   <SelectValue placeholder="All Subjects" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="all_subjects">All Subjects</SelectItem>
+                                <SelectContent className="bg-white border border-gray-200 shadow-md">
+                                  <SelectItem value="all_subjects" className="text-gray-800 focus:bg-indigo-50 focus:text-indigo-700">All Subjects</SelectItem>
                                   {uniqueSubjects.map((subject) => (
-                                    <SelectItem key={subject} value={subject}>
+                                    <SelectItem key={subject} value={subject} className="text-gray-700 focus:bg-indigo-50 focus:text-indigo-700">
                                       {subject}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
-                            </div>                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium text-gray-700">
-                                <User className="h-4 w-4 mr-2 text-blue-600" />
+                            </div>
+                            
+                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm">
+                              <Label className="flex items-center text-sm font-medium text-gray-800">
+                                <User className="h-4 w-4 mr-2 text-indigo-600" />
                                 Class
                               </Label>
                               <Select 
                                 value={selectedClass} 
                                 onValueChange={setSelectedClass}
                               >
-                                <SelectTrigger className="h-10 w-full bg-white border-gray-300 hover:border-blue-500 focus:border-blue-500">
+                                <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-indigo-300 focus:border-indigo-400 shadow-sm">
                                   <SelectValue placeholder="All Classes" />
                                 </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="all_classes">All Classes</SelectItem>
+                                <SelectContent className="bg-white border border-gray-200 shadow-md">
+                                  <SelectItem value="all_classes" className="text-gray-800 focus:bg-indigo-50 focus:text-indigo-700">All Classes</SelectItem>
                                   {uniqueClasses.map((cls) => (
-                                    <SelectItem key={cls} value={cls}>
+                                    <SelectItem key={cls} value={cls} className="text-gray-700 focus:bg-indigo-50 focus:text-indigo-700">
                                       {cls}
                                     </SelectItem>
                                   ))}
                                 </SelectContent>
                               </Select>
-                            </div>                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                <Calendar className="h-4 w-4 mr-2 text-blue-600" />
+                            </div>
+                            
+                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-100 shadow-sm">
+                              <Label className="flex items-center text-sm font-medium text-gray-800 mb-2">
+                                <Calendar className="h-4 w-4 mr-2 text-indigo-600" />
                                 Date Range
                               </Label>
                               <div className="flex flex-col gap-3">
@@ -222,13 +236,13 @@ const App = () => {
                                   selected={startDate}
                                   onSelect={setStartDate}
                                   placeholder="Start date"
-                                  className="border-gray-300 focus:border-blue-500"
+                                  className="border-gray-200 focus:border-indigo-400 shadow-sm bg-white"
                                 />
                                 <DatePicker 
                                   selected={endDate}
                                   onSelect={setEndDate}
                                   placeholder="End date"
-                                  className="border-gray-300 focus:border-blue-500"
+                                  className="border-gray-200 focus:border-indigo-400 shadow-sm bg-white"
                                 />
                               </div>
                             </div>
@@ -301,21 +315,19 @@ const App = () => {
                   </section>
                 }
               />            </Routes>
-          </main>
-
-          <footer className="border-t py-8 md:py-6 bg-gray-50">
+          </main>          <footer className="border-t py-8 md:py-6 bg-gradient-to-r from-indigo-50 to-blue-50">
             <div className="container flex flex-col items-center justify-between gap-6 md:h-16 md:flex-row">
               <p className="text-sm text-gray-600 text-center md:text-left">
                 &copy; 2025 ACS Future School. All rights reserved.
               </p>
               <div className="flex gap-6">
-                <Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">
+                <Link to="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors font-medium">
                   Privacy Policy
                 </Link>
-                <Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">
+                <Link to="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors font-medium">
                   Terms of Service
                 </Link>
-                <Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">
+                <Link to="#" className="text-sm text-gray-600 hover:text-indigo-600 transition-colors font-medium">
                   Contact Us
                 </Link>
               </div>
