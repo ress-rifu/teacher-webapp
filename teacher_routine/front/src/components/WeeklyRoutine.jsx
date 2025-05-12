@@ -249,19 +249,43 @@ const WeeklyRoutine = ({ routines = [] }) => {
     setCurrentWeekIndex(currentWeekIndex + 1);
   };
 
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
+
   // Get routines for the current week
   const sortedRoutines = getRoutinesForWeek(currentWeekIndex);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Weekly Class Schedule</h1>
-        <p className="text-muted-foreground mt-1">
-          {weekRangeText}
-        </p>
+        <h1 className="text-3xl font-bold tracking-tight text-primary">Weekly Class Schedule</h1>
+        <div className="flex items-center justify-center mt-4 space-x-4">
+          <Button 
+            onClick={handlePreviousWeek} 
+            variant="outline" 
+            size="sm"
+            className="transition-colors hover:bg-secondary"
+          >
+            <ChevronLeft className="h-4 w-4 mr-2" />
+            Previous Week
+          </Button>
+          <p className="text-lg font-medium text-gray-700 px-4 py-2 rounded-full bg-secondary/50">
+            {weekRangeText}
+          </p>
+          <Button 
+            onClick={handleNextWeek} 
+            variant="outline" 
+            size="sm"
+            className="transition-colors hover:bg-secondary"
+          >
+            Next Week
+            <ChevronRight className="h-4 w-4 ml-2" />
+          </Button>
+        </div>
       </div>
 
-      <Card>
+      <Card className="shadow-md border-neutral-100">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
@@ -272,7 +296,7 @@ const WeeklyRoutine = ({ routines = [] }) => {
               onClick={handleClearFilters}
               variant="outline"
               size="sm"
-              className="text-destructive hover:text-destructive"
+              className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
             >
               <X className="h-4 w-4 mr-2" />
               Clear Filters
@@ -280,16 +304,17 @@ const WeeklyRoutine = ({ routines = [] }) => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            <div className="space-y-2">
-              <Label className="flex items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <div className="space-y-2.5">
+              <Label className="flex items-center text-sm font-medium">
                 <Clock className="h-4 w-4 mr-2 text-primary" />
                 Time
               </Label>
               <Select 
                 value={filterTime}
                 onValueChange={handleFilterTime}
-              >                <SelectTrigger>
+              >                
+                <SelectTrigger className="h-10 w-full">
                   <SelectValue placeholder="All Times" />
                 </SelectTrigger>
                 <SelectContent>
@@ -303,16 +328,17 @@ const WeeklyRoutine = ({ routines = [] }) => {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label className="flex items-center">
-                <User className="h-4 w-4 mr-2 text-primary" />
+            <div className="space-y-2.5">
+              <Label className="flex items-center text-sm font-medium">
+                <UserCheck className="h-4 w-4 mr-2 text-primary" />
                 Class
               </Label>
               <Select 
                 value={filterClass}
                 onValueChange={handleFilterClass}
               >
-                <SelectTrigger>                  <SelectValue placeholder="All Classes" />
+                <SelectTrigger className="h-10 w-full">
+                  <SelectValue placeholder="All Classes" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all_classes">All Classes</SelectItem>
@@ -325,8 +351,8 @@ const WeeklyRoutine = ({ routines = [] }) => {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label className="flex items-center">
+            <div className="space-y-2.5">
+              <Label className="flex items-center text-sm font-medium">
                 <BookOpen className="h-4 w-4 mr-2 text-primary" />
                 Subject
               </Label>
@@ -334,7 +360,8 @@ const WeeklyRoutine = ({ routines = [] }) => {
                 value={filterSubject}
                 onValueChange={handleFilterSubject}
               >
-                <SelectTrigger>                  <SelectValue placeholder="All Subjects" />
+                <SelectTrigger className="h-10 w-full">
+                  <SelectValue placeholder="All Subjects" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all_subjects">All Subjects</SelectItem>
@@ -347,16 +374,17 @@ const WeeklyRoutine = ({ routines = [] }) => {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label className="flex items-center">
-                <UserCheck className="h-4 w-4 mr-2 text-primary" />
+            <div className="space-y-2.5">
+              <Label className="flex items-center text-sm font-medium">
+                <User className="h-4 w-4 mr-2 text-primary" />
                 Teacher
               </Label>
               <Select 
                 value={filterTeacher}
                 onValueChange={handleFilterTeacher}
               >
-                <SelectTrigger>                  <SelectValue placeholder="All Teachers" />
+                <SelectTrigger className="h-10 w-full">
+                  <SelectValue placeholder="All Teachers" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all_teachers">All Teachers</SelectItem>
@@ -369,53 +397,36 @@ const WeeklyRoutine = ({ routines = [] }) => {
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label className="flex items-center">
+            <div className="space-y-2.5">
+              <Label className="flex items-center text-sm font-medium">
                 <Calendar className="h-4 w-4 mr-2 text-primary" />
-                Date
+                Select Date
               </Label>
               <DatePicker 
                 selected={selectedDate}
-                onSelect={setSelectedDate}
+                onSelect={handleDateChange}
+                placeholder="Choose a specific date"
+                className="w-full"
               />
             </div>
           </div>
         </CardContent>
       </Card>
 
-      <div className="flex justify-between items-center mb-4">
-        <Button
-          onClick={handlePreviousWeek}
-          variant="outline"
-          className="flex items-center"
-        >
-          <ChevronLeft className="h-4 w-4 mr-2" />
-          Previous Week
-        </Button>
-        <Button
-          onClick={handleNextWeek}
-          variant="outline"
-          className="flex items-center"
-        >
-          Next Week
-          <ChevronRight className="h-4 w-4 ml-2" />
-        </Button>
-      </div>
-
-      <Card>
+      <Card className="shadow-md overflow-hidden">
         <AnimatePresence>
           {sortedRoutines.length > 0 ? (
-            <Table>
-              <TableCaption>Weekly schedule for {weekRangeText}</TableCaption>
-              <TableHeader>
+            <Table className="border rounded-lg">
+              <TableCaption className="mt-4 text-sm text-muted-foreground">Weekly schedule for {weekRangeText}</TableCaption>
+              <TableHeader className="bg-secondary/50">
                 <TableRow>
-                  <TableHead>Day</TableHead>
-                  <TableHead>Class Date</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Teacher</TableHead>
-                  <TableHead>Topic</TableHead>
+                  <TableHead className="font-medium">Day</TableHead>
+                  <TableHead className="font-medium">Class Date</TableHead>
+                  <TableHead className="font-medium">Time</TableHead>
+                  <TableHead className="font-medium">Class</TableHead>
+                  <TableHead className="font-medium">Subject</TableHead>
+                  <TableHead className="font-medium">Teacher</TableHead>
+                  <TableHead className="font-medium">Topic</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -430,25 +441,33 @@ const WeeklyRoutine = ({ routines = [] }) => {
                   return (
                     <TableRow 
                       key={idx}
-                      className={isToday ? "bg-primary/10" : ""}
+                      className={isToday ? "bg-primary/10" : idx % 2 === 0 ? "bg-white" : "bg-secondary/20"}
                     >
                       <TableCell className="font-medium">{dayName}</TableCell>
                       <TableCell>{routine[0]}</TableCell>
                       <TableCell>{routine[1]}</TableCell>
                       <TableCell>{routine[36]}</TableCell>
-                      <TableCell>{routine[5]}</TableCell>
+                      <TableCell className="font-medium">{routine[5]}</TableCell>
                       <TableCell>{routine[10]}</TableCell>
-                      <TableCell>{routine[6]}</TableCell>
+                      <TableCell className="max-w-[200px] truncate">{routine[6]}</TableCell>
                     </TableRow>
                   );
                 })}
               </TableBody>
             </Table>
           ) : (
-            <div className="flex flex-col items-center justify-center h-64 text-muted-foreground">
-              <Filter className="h-12 w-12 mb-4" />
-              <p>No routines found for the selected filters.</p>
-            </div>          )}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="p-8 text-center"
+            >
+              <div className="text-5xl mb-4 flex justify-center">📭</div>
+              <h3 className="text-xl font-semibold mb-2">No classes found</h3>
+              <p className="text-muted-foreground">
+                No classes match your filters for this week. Try adjusting your filters or select another week.
+              </p>
+            </motion.div>
+          )}
         </AnimatePresence>
       </Card>
     </div>

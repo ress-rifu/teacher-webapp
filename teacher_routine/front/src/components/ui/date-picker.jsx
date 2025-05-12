@@ -15,6 +15,7 @@ function DatePicker({
   className,
   selected,
   onSelect,
+  placeholder = "Pick a date",
   ...props
 }) {
   return (
@@ -23,22 +24,23 @@ function DatePicker({
         <Button
           variant={"outline"}
           className={cn(
-            "w-full justify-start text-left font-normal",
+            "w-full h-10 justify-start text-left font-normal border border-input",
             !selected && "text-muted-foreground",
             className
           )}
           {...props}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {selected ? format(selected, "PPP") : <span>Pick a date</span>}
+          {selected ? format(selected, "PPP") : <span>{placeholder}</span>}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-auto p-0" align="start">
+      <PopoverContent className="w-auto p-0 bg-white" align="start">
         <Calendar
           mode="single"
           selected={selected}
           onSelect={onSelect}
           initialFocus
+          className="rounded-md border shadow-md"
         />
       </PopoverContent>
     </Popover>

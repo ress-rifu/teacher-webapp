@@ -54,35 +54,36 @@ const RoutineTable = ({ routines }) => {
     const currentItems = routines.slice(indexOfFirstItem, indexOfLastItem);
 
     return (
-        <div className="space-y-4">
-            <Table>
-                <TableCaption>Teacher routine schedule</TableCaption>
-                <TableHeader>
+        <div className="space-y-6">
+            <Table className="border rounded-lg overflow-hidden shadow-sm">
+                <TableCaption className="mt-4 text-sm text-muted-foreground">Teacher routine schedule for ACS Future School</TableCaption>
+                <TableHeader className="bg-secondary/50">
                     <TableRow>
-                        <TableHead>Class Date</TableHead>
-                        <TableHead>Time</TableHead>
-                        <TableHead>Class</TableHead>
-                        <TableHead>Subject</TableHead>
-                        <TableHead>Teacher</TableHead>
-                        <TableHead>Topic</TableHead>
-                        <TableHead>Part</TableHead>
-                        <TableHead>Action</TableHead>
+                        <TableHead className="font-medium">Class Date</TableHead>
+                        <TableHead className="font-medium">Time</TableHead>
+                        <TableHead className="font-medium">Class</TableHead>
+                        <TableHead className="font-medium">Subject</TableHead>
+                        <TableHead className="font-medium">Teacher</TableHead>
+                        <TableHead className="font-medium">Topic</TableHead>
+                        <TableHead className="font-medium">Part</TableHead>
+                        <TableHead className="font-medium">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {currentItems.map((routine, index) => (
-                        <TableRow key={index}>
-                            <TableCell>{routine[0]}</TableCell> {/* Class Date */}
+                        <TableRow key={index} className={index % 2 === 0 ? "bg-white" : "bg-secondary/20"}>
+                            <TableCell className="font-medium">{routine[0]}</TableCell> {/* Class Date */}
                             <TableCell>{routine[1]}</TableCell> {/* Time */}
                             <TableCell>{routine[36]}</TableCell> {/* Class */}
-                            <TableCell>{routine[5]}</TableCell> {/* Subject */}
+                            <TableCell className="font-medium">{routine[5]}</TableCell> {/* Subject */}
                             <TableCell>{routine[10]}</TableCell> {/* Teacher */}
-                            <TableCell>{routine[6]}</TableCell> {/* Topic */}
+                            <TableCell className="max-w-[200px] truncate">{routine[6]}</TableCell> {/* Topic */}
                             <TableCell>{routine[7]}</TableCell> {/* Part */}
                             <TableCell>
                                 <Button 
-                                    variant="default" 
+                                    variant="outline" 
                                     size="sm"
+                                    className="hover:bg-primary hover:text-white transition-colors"
                                     onClick={() => handleGenerateClick(routine)}
                                 >
                                     Generate
@@ -95,12 +96,13 @@ const RoutineTable = ({ routines }) => {
             
             {/* Pagination */}
             {totalPages > 1 && (
-                <Pagination>
+                <Pagination className="justify-center">
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious 
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
+                                className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-secondary transition-colors"}
                             />
                         </PaginationItem>
                         
@@ -116,6 +118,7 @@ const RoutineTable = ({ routines }) => {
                                         <PaginationLink 
                                             isActive={currentPage === pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
+                                            className={currentPage === pageNum ? "bg-primary text-white" : "hover:bg-secondary transition-colors"}
                                         >
                                             {pageNum}
                                         </PaginationLink>
@@ -129,6 +132,7 @@ const RoutineTable = ({ routines }) => {
                             <PaginationNext 
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
+                                className={currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-secondary transition-colors"}
                             />
                         </PaginationItem>
                     </PaginationContent>
