@@ -1,6 +1,8 @@
 // teacher-routine-frontend/src/components/ErrorBoundary.jsx
 
 import React, { Component } from 'react';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 
 class ErrorBoundary extends Component {
     constructor(props) {
@@ -18,7 +20,15 @@ class ErrorBoundary extends Component {
 
     render() {
         if (this.state.hasError) {
-            return <div className="bg-red-200 text-red-700 p-4 rounded-lg">Something went wrong. Please try again later.</div>;
+            return (
+                <Alert variant="destructive" className="my-4">
+                    <AlertCircle className="h-4 w-4" />
+                    <AlertTitle>Error</AlertTitle>
+                    <AlertDescription>
+                        Something went wrong. Please try again later.
+                    </AlertDescription>
+                </Alert>
+            );
         }
         return this.props.children;
     }

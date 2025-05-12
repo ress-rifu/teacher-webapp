@@ -3,10 +3,21 @@ import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import RoutineTable from "./components/RoutineTable";
 import WeeklyRoutine from "./components/WeeklyRoutine";
 import axios from "axios";
-import { FiFilter, FiXCircle, FiCalendar, FiClock, FiBook, FiUser, FiHome } from "react-icons/fi";
+import { Calendar, Clock, BookOpen, User, Home, Filter, X, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+import { DatePicker } from "./components/ui/date-picker";
+import { Button } from "./components/ui/button";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./components/ui/select";
+import { Label } from "./components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+import { ToastProvider } from "./components/ui/toast";
 
 const App = () => {
   const [routines, setRoutines] = useState([]);
@@ -17,11 +28,10 @@ const App = () => {
   const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   const [uniqueTeachers, setUniqueTeachers] = useState([]);
   const [uniqueClasses, setUniqueClasses] = useState([]);
   const [uniqueSubjects, setUniqueSubjects] = useState([]);
-  const API_URL = process.env.REACT_APP_API_URL || "https://teacher-webapp.onrender.com";
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
   useEffect(() => {
     const fetchRoutines = async () => {
@@ -41,7 +51,7 @@ const App = () => {
 
         setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[10]).filter(Boolean))]);
         setUniqueClasses([...new Set(filteredRoutines.map((r) => r[36]).filter(Boolean))]);
-        setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[4]).filter(Boolean))]);
+        setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[5]).filter(Boolean))]);
 
         setLoading(false);
       } catch (error) {
@@ -54,13 +64,13 @@ const App = () => {
   }, []);
 
   const filteredRoutines = routines.filter((routine) => {
-    if (!routine[0] || !routine[8]) return false;
+    if (!routine[0]) return false;
     const routineDate = new Date(routine[0]);
 
     return (
       (!selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
       (!selectedClass || routine[36]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
-      (!selectedSubject || routine[4]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
+      (!selectedSubject || routine[5]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
       (!startDate || routineDate >= startDate) &&
       (!endDate || routineDate <= endDate)
     );
@@ -81,227 +91,224 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
-        <nav className="bg-white/80 backdrop-blur-md border-b border-blue-100 sticky top-0 z-50">
-          <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center">
-            <Link to="/" className="flex items-center space-x-3 mb-4 md:mb-0">
-              <img src="/logo.svg" alt="ACS Future School Logo" className="h-10" />
-              <span className="text-xl font-bold text-gray-800">ACS Future School</span>
-            </Link>
+    <ToastProvider>
+      <Router>
+        <div className="min-h-screen bg-background">
+          <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <div className="container flex h-14 items-center">
+              <Link to="/" className="flex items-center gap-2 mr-8">
+                <img src="/logo.svg" alt="ACS Future School Logo" className="h-8 w-auto" />
+                <span className="font-semibold hidden md:inline-block">ACS Future School</span>
+              </Link>
 
-            <div className="flex space-x-4">
-              <Link
-                to="/"
-                className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-              >
-                <FiCalendar className="mr-2 text-blue-600" />
-                <span className="text-gray-700">Schedule</span>
-              </Link>
-              <Link
-                to="/weekly"
-                className="flex items-center px-3 py-2 rounded-lg hover:bg-blue-50 transition-colors"
-              >
-                <FiClock className="mr-2 text-purple-600" />
-                <span className="text-gray-700">Weekly View</span>
-              </Link>
+              <nav className="flex gap-4 sm:gap-6">
+                <Link
+                  to="/"
+                  className="text-sm flex items-center font-medium transition-colors hover:text-primary"
+                >
+                  <Calendar className="h-4 w-4 mr-2" />
+                  <span>Schedule</span>
+                </Link>
+                <Link
+                  to="/weekly"
+                  className="text-sm flex items-center font-medium transition-colors hover:text-primary"
+                >
+                  <Clock className="h-4 w-4 mr-2" />
+                  <span>Weekly View</span>
+                </Link>
+              </nav>
             </div>
-          </div>
-        </nav>
+          </header>
 
-        <main className="container mx-auto px-4 py-8">
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <section className="space-y-8">
-                  <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5 }}
-                    className="text-center mb-12"
-                  >
-                    <h1 className="text-4xl font-bold text-gray-800 mb-2">Class Schedule</h1>
-                    <p className="text-gray-600">AFS Academic Program</p>
-                  </motion.div>
+          <main className="container py-6 md:py-10">
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <section className="space-y-6">
+                    <motion.div
+                      initial={{ opacity: 0, y: -20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5 }}
+                      className="text-center"
+                    >
+                      <h1 className="text-3xl font-bold tracking-tight">Class Schedule</h1>
+                      <p className="text-muted-foreground mt-1">AFS Academic Program</p>
+                    </motion.div>
 
-                  <motion.div
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.2 }}
-                    className="bg-white rounded-xl shadow-lg p-6 mb-8"
-                  >
-                    <div className="flex items-center justify-between mb-6">
-                      <div className="flex items-center space-x-2">
-                        <FiFilter className="text-xl text-blue-600" />
-                        <h2 className="text-xl font-semibold">Filters</h2>
-                      </div>
-                      <button
-                        onClick={handleRemoveFilters}
-                        className="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        <FiXCircle className="mr-2" />
-                        Clear Filters
-                      </button>
-                    </div>
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                    >
+                      <Card>
+                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                          <div className="flex items-center">
+                            <Filter className="h-4 w-4 mr-2" />
+                            <CardTitle>Filters</CardTitle>
+                          </div>
+                          <Button
+                            onClick={handleRemoveFilters}
+                            variant="outline"
+                            size="sm"
+                            className="text-destructive hover:text-destructive"
+                          >
+                            <X className="h-4 w-4 mr-2" />
+                            Clear Filters
+                          </Button>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div className="space-y-2">
+                              <Label className="flex items-center">
+                                <User className="h-4 w-4 mr-2 text-primary" />
+                                Teacher
+                              </Label>
+                              <Select 
+                                value={selectedTeacher} 
+                                onValueChange={setSelectedTeacher}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="All Teachers" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">All Teachers</SelectItem>
+                                  {uniqueTeachers.map((teacher) => (
+                                    <SelectItem key={teacher} value={teacher}>
+                                      {teacher}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <div className="space-y-2">
-                        <label className="flex items-center text-sm font-medium text-gray-700">
-                          <FiUser className="mr-2 text-blue-500" />
-                          Teacher
-                        </label>
-                        <select
-                          value={selectedTeacher}
-                          onChange={(e) => setSelectedTeacher(e.target.value)}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-                        >
-                          <option value="">All Teachers</option>
-                          {uniqueTeachers.map((teacher) => (
-                            <option key={teacher} value={teacher}>
-                              {teacher}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                            <div className="space-y-2">
+                              <Label className="flex items-center">
+                                <BookOpen className="h-4 w-4 mr-2 text-primary" />
+                                Subject
+                              </Label>
+                              <Select 
+                                value={selectedSubject} 
+                                onValueChange={setSelectedSubject}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="All Subjects" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">All Subjects</SelectItem>
+                                  {uniqueSubjects.map((subject) => (
+                                    <SelectItem key={subject} value={subject}>
+                                      {subject}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
 
-                      <div className="space-y-2">
-                        <label className="flex items-center text-sm font-medium text-gray-700">
-                          <FiBook className="mr-2 text-green-500" />
-                          Subject
-                        </label>
-                        <select
-                          value={selectedSubject}
-                          onChange={(e) => setSelectedSubject(e.target.value)}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all"
-                        >
-                          <option value="">All Subjects</option>
-                          {uniqueSubjects.map((subject) => (
-                            <option key={subject} value={subject}>
-                              {subject}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                            <div className="space-y-2">
+                              <Label className="flex items-center">
+                                <User className="h-4 w-4 mr-2 text-primary" />
+                                Class
+                              </Label>
+                              <Select 
+                                value={selectedClass} 
+                                onValueChange={setSelectedClass}
+                              >
+                                <SelectTrigger>
+                                  <SelectValue placeholder="All Classes" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="">All Classes</SelectItem>
+                                  {uniqueClasses.map((cls) => (
+                                    <SelectItem key={cls} value={cls}>
+                                      {cls}
+                                    </SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </div>
 
-                      <div className="space-y-2">
-                        <label className="flex items-center text-sm font-medium text-gray-700">
-                          <FiUser className="mr-2 text-purple-500" />
-                          Class
-                        </label>
-                        <select
-                          value={selectedClass}
-                          onChange={(e) => setSelectedClass(e.target.value)}
-                          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
-                        >
-                          <option value="">All Classes</option>
-                          {uniqueClasses.map((cls) => (
-                            <option key={cls} value={cls}>
-                              {cls}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
+                            <div className="space-y-2">
+                              <Label className="flex items-center mb-2">
+                                <Calendar className="h-4 w-4 mr-2 text-primary" />
+                                Date Range
+                              </Label>
+                              <div className="flex flex-col gap-3">
+                                <DatePicker 
+                                  selected={startDate}
+                                  onSelect={setStartDate}
+                                />
+                                <DatePicker 
+                                  selected={endDate}
+                                  onSelect={setEndDate}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
 
-                      <div className="space-y-2">
-                        <label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                          <FiCalendar className="mr-2 text-orange-500" />
-                          Date Range
-                        </label>
-                        <motion.div
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="flex flex-col gap-3"
-                        >
-                          <DatePicker
-                            selected={startDate}
-                            onChange={(date) => setStartDate(date)}
-                            selectsStart
-                            startDate={startDate}
-                            endDate={endDate}
-                            placeholderText="Start Date"
-                            className="w-full px-4 py-2.5 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                            dateFormat="dd/MM/yyyy"
-                            isClearable
-                            clearButtonClassName="after:content-['×'] after:text-2xl after:text-orange-500"
-                            showIcon
-                            icon={<FiCalendar className="text-gray-400" />}
-                          />
-                          <DatePicker
-                            selected={endDate}
-                            onChange={(date) => setEndDate(date)}
-                            selectsEnd
-                            startDate={startDate}
-                            endDate={endDate}
-                            minDate={startDate}
-                            placeholderText="End Date"
-                            className="w-full px-4 py-2.5 text-sm border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                            dateFormat="dd/MM/yyyy"
-                            isClearable
-                            clearButtonClassName="after:content-['×'] after:text-2xl after:text-orange-500"
-                            showIcon
-                            icon={<FiCalendar className="text-gray-400" />}
-                          />
-                        </motion.div>
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
-                  >
-                    {loading ? (
-                      <div className="flex justify-center items-center h-64">
-                        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-blue-500"></div>
-                      </div>
-                    ) : error ? (
-                      <div className="bg-red-50 p-6 rounded-xl text-center">
-                        <div className="text-red-600 mb-4 text-4xl">⚠️</div>
-                        <p className="text-red-700">{error}</p>
-                      </div>
-                    ) : sortedRoutines.length === 0 ? (
-                      <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-                        <div className="text-6xl mb-4">📭</div>
-                        <h3 className="text-xl font-semibold mb-2">No classes found</h3>
-                        <p className="text-gray-600">Try adjusting your filters</p>
-                      </div>
-                    ) : (
-                      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                        <div className="overflow-x-auto">
-                          <RoutineTable routines={sortedRoutines} />
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                    >
+                      {loading ? (
+                        <div className="flex justify-center items-center h-64">
+                          <Loader2 className="h-12 w-12 text-primary animate-spin" />
                         </div>
-                      </div>
-                    )}
-                  </motion.div>
-                </section>
-              }
-            />
-            <Route path="/weekly" element={<WeeklyRoutine routines={routines} />} />
-          </Routes>
-        </main>
+                      ) : error ? (
+                        <Card className="border-destructive">
+                          <CardHeader>
+                            <CardTitle className="text-destructive">Error</CardTitle>
+                            <CardDescription>{error}</CardDescription>
+                          </CardHeader>
+                        </Card>
+                      ) : sortedRoutines.length === 0 ? (
+                        <Card>
+                          <CardHeader className="text-center">
+                            <div className="text-5xl mb-4 flex justify-center">📭</div>
+                            <CardTitle>No classes found</CardTitle>
+                            <CardDescription>Try adjusting your filters</CardDescription>
+                          </CardHeader>
+                        </Card>
+                      ) : (
+                        <Card>
+                          <div className="overflow-x-auto">
+                            <RoutineTable routines={sortedRoutines} />
+                          </div>
+                        </Card>
+                      )}
+                    </motion.div>
+                  </section>
+                }
+              />
+              <Route path="/weekly" element={<WeeklyRoutine routines={routines} />} />
+            </Routes>
+          </main>
 
-        <footer className="bg-white border-t border-blue-100 mt-12">
-          <div className="container mx-auto px-4 py-8">
-            <div className="text-center text-sm text-gray-600">
-              <p>© 2024 ACS Future School. All rights reserved.</p>
-              <div className="mt-2 flex justify-center space-x-4">
-                <a href="#" className="hover:text-blue-600 transition-colors">
+          <footer className="border-t py-6 md:py-0">
+            <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
+              <p className="text-sm text-muted-foreground text-center md:text-left">
+                &copy; 2025 ACS Future School. All rights reserved.
+              </p>
+              <div className="flex gap-4">
+                <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
                   Privacy Policy
-                </a>
-                <a href="#" className="hover:text-blue-600 transition-colors">
+                </Link>
+                <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
                   Terms of Service
-                </a>
-                <a href="#" className="hover:text-blue-600 transition-colors">
+                </Link>
+                <Link to="#" className="text-sm text-muted-foreground hover:text-foreground">
                   Contact Us
-                </a>
+                </Link>
               </div>
             </div>
-          </div>
-        </footer>
-      </div>
-    </Router>
+          </footer>
+        </div>
+      </Router>
+    </ToastProvider>
   );
 };
 

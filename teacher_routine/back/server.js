@@ -8,9 +8,9 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Enable CORS for frontend hosted on Netlify
+// Enable CORS for both production and development environments
 app.use(cors({
-  origin: 'https://afsroutine.netlify.app',  // Allow only this frontend URL
+  origin: ['https://afsroutine.netlify.app', 'http://localhost:5173', 'http://localhost:5174'],
 }));
 
 // Set up Google Sheets and Google Slides API clients

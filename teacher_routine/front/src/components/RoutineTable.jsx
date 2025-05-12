@@ -1,6 +1,29 @@
 import React from 'react';
+import { 
+  Table, 
+  TableBody, 
+  TableCaption, 
+  TableCell, 
+  TableHead,
+
+  TableHeader, 
+  TableRow 
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
+import { useState } from "react";
 
 const RoutineTable = ({ routines }) => {
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
+    
     const handleGenerateClick = async (routine) => {
         const { classDate, time, className, subject, teacher, topic, part } = routine;
 
@@ -24,43 +47,93 @@ const RoutineTable = ({ routines }) => {
         }
     };
 
+    // Calculate pagination
+    const totalPages = Math.ceil(routines.length / itemsPerPage);
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = routines.slice(indexOfFirstItem, indexOfLastItem);
+
     return (
-        <div>
-            <table className="min-w-full table-auto mt-4 shadow-lg rounded-lg overflow-hidden">
-                <thead className="bg-blue-500 text-white">
-                    <tr>
-                        <th className="p-3">Class Date</th>
-                        <th className="p-3">Time</th>
-                        <th className="p-3">Class</th>
-                        <th className="p-3">Subject</th>
-                        <th className="p-3">Teacher</th>
-                        <th className="p-3">Topic</th>
-                        <th className="p-3">Part</th>
-                        <th className="p-3">Action</th> {/* Added Action column */}
-                    </tr>
-                </thead>
-                <tbody>
-                    {routines.map((routine, index) => (
-                        <tr key={index} className="border-b hover:bg-gray-200 transition-all duration-300">
-                            <td className="p-3">{routine[0]}</td> {/* Class Date */}
-                            <td className="p-3">{routine[1]}</td> {/* Time */}
-                            <td className="p-3">{routine[36]}</td> {/* Class */}
-                            <td className="p-3">{routine[5]}</td> {/* Subject */}
-                            <td className="p-3">{routine[10]}</td> {/* Teacher */}
-                            <td className="p-3">{routine[6]}</td> {/* Topic */}
-                            <td className="p-3">{routine[7]}</td> {/* Part */}
-                            <td className="p-3">
-                                <button
-                                    className="bg-green-500 text-white px-4 py-2 rounded"
+        <div className="space-y-4">
+            <Table>
+                <TableCaption>Teacher routine schedule</TableCaption>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Class Date</TableHead>
+                        <TableHead>Time</TableHead>
+                        <TableHead>Class</TableHead>
+                        <TableHead>Subject</TableHead>
+                        <TableHead>Teacher</TableHead>
+                        <TableHead>Topic</TableHead>
+                        <TableHead>Part</TableHead>
+                        <TableHead>Action</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    {currentItems.map((routine, index) => (
+                        <TableRow key={index}>
+                            <TableCell>{routine[0]}</TableCell> {/* Class Date */}
+                            <TableCell>{routine[1]}</TableCell> {/* Time */}
+                            <TableCell>{routine[36]}</TableCell> {/* Class */}
+                            <TableCell>{routine[5]}</TableCell> {/* Subject */}
+                            <TableCell>{routine[10]}</TableCell> {/* Teacher */}
+                            <TableCell>{routine[6]}</TableCell> {/* Topic */}
+                            <TableCell>{routine[7]}</TableCell> {/* Part */}
+                            <TableCell>
+                                <Button 
+                                    variant="default" 
+                                    size="sm"
                                     onClick={() => handleGenerateClick(routine)}
                                 >
                                     Generate
-                                </button>
-                            </td> {/* Generate Button */}
-                        </tr>
+                                </Button>
+                            </TableCell>
+                        </TableRow>
                     ))}
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
+            
+            {/* Pagination */}
+            {totalPages > 1 && (
+                <Pagination>
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious 
+                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                disabled={currentPage === 1}
+                            />
+                        </PaginationItem>
+                        
+                        {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                            // Logic to display current page and surrounding pages
+                            let pageNum = i + 1;
+                            if (totalPages > 5 && currentPage > 3) {
+                                pageNum = currentPage - 3 + i + 1;
+                            }
+                            if (pageNum <= totalPages) {
+                                return (
+                                    <PaginationItem key={i}>
+                                        <PaginationLink 
+                                            isActive={currentPage === pageNum}
+                                            onClick={() => setCurrentPage(pageNum)}
+                                        >
+                                            {pageNum}
+                                        </PaginationLink>
+                                    </PaginationItem>
+                                );
+                            }
+                            return null;
+                        })}
+                        
+                        <PaginationItem>
+                            <PaginationNext 
+                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                disabled={currentPage === totalPages}
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            )}
         </div>
     );
 };
