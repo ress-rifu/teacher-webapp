@@ -51,39 +51,40 @@ const RoutineTable = ({ routines }) => {
     const totalPages = Math.ceil(routines.length / itemsPerPage);
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = routines.slice(indexOfFirstItem, indexOfLastItem);
-
-    return (
+    const currentItems = routines.slice(indexOfFirstItem, indexOfLastItem);    return (
         <div className="space-y-6">
-            <Table className="border rounded-lg overflow-hidden shadow-sm">
-                <TableCaption className="mt-4 text-sm text-muted-foreground">Teacher routine schedule for ACS Future School</TableCaption>
-                <TableHeader className="bg-secondary/50">
+            <Table className="border border-gray-200 rounded-lg overflow-hidden shadow-md">
+                <TableCaption className="mt-4 text-sm text-gray-500 pb-4">Teacher routine schedule for ACS Future School</TableCaption>
+                <TableHeader className="bg-slate-50 border-b">
                     <TableRow>
-                        <TableHead className="font-medium">Class Date</TableHead>
-                        <TableHead className="font-medium">Time</TableHead>
-                        <TableHead className="font-medium">Class</TableHead>
-                        <TableHead className="font-medium">Subject</TableHead>
-                        <TableHead className="font-medium">Teacher</TableHead>
-                        <TableHead className="font-medium">Topic</TableHead>
-                        <TableHead className="font-medium">Part</TableHead>
-                        <TableHead className="font-medium">Action</TableHead>
+                        <TableHead className="font-semibold text-gray-700 py-4">Class Date</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Time</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Class</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Subject</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Teacher</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Topic</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Part</TableHead>
+                        <TableHead className="font-semibold text-gray-700">Action</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     {currentItems.map((routine, index) => (
-                        <TableRow key={index} className={index % 2 === 0 ? "bg-white" : "bg-secondary/20"}>
-                            <TableCell className="font-medium">{routine[0]}</TableCell> {/* Class Date */}
-                            <TableCell>{routine[1]}</TableCell> {/* Time */}
-                            <TableCell>{routine[36]}</TableCell> {/* Class */}
-                            <TableCell className="font-medium">{routine[5]}</TableCell> {/* Subject */}
-                            <TableCell>{routine[10]}</TableCell> {/* Teacher */}
-                            <TableCell className="max-w-[200px] truncate">{routine[6]}</TableCell> {/* Topic */}
-                            <TableCell>{routine[7]}</TableCell> {/* Part */}
+                        <TableRow 
+                            key={index} 
+                            className={index % 2 === 0 ? "bg-white hover:bg-blue-50/50 transition-colors" : "bg-slate-50/80 hover:bg-blue-50/50 transition-colors"}
+                        >
+                            <TableCell className="font-medium text-gray-800">{routine[0]}</TableCell> {/* Class Date */}
+                            <TableCell className="text-gray-700">{routine[1]}</TableCell> {/* Time */}
+                            <TableCell className="text-gray-700">{routine[36]}</TableCell> {/* Class */}
+                            <TableCell className="font-medium text-gray-800">{routine[5]}</TableCell> {/* Subject */}
+                            <TableCell className="text-gray-700">{routine[10]}</TableCell> {/* Teacher */}
+                            <TableCell className="max-w-[200px] truncate text-gray-700">{routine[6]}</TableCell> {/* Topic */}
+                            <TableCell className="text-gray-700">{routine[7]}</TableCell> {/* Part */}
                             <TableCell>
                                 <Button 
                                     variant="outline" 
                                     size="sm"
-                                    className="hover:bg-primary hover:text-white transition-colors"
+                                    className="bg-white text-blue-600 border-blue-200 hover:bg-blue-600 hover:text-white hover:border-blue-600 transition-colors font-medium"
                                     onClick={() => handleGenerateClick(routine)}
                                 >
                                     Generate
@@ -93,8 +94,7 @@ const RoutineTable = ({ routines }) => {
                     ))}
                 </TableBody>
             </Table>
-            
-            {/* Pagination */}
+              {/* Pagination */}
             {totalPages > 1 && (
                 <Pagination className="justify-center">
                     <PaginationContent>
@@ -102,7 +102,7 @@ const RoutineTable = ({ routines }) => {
                             <PaginationPrevious 
                                 onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                 disabled={currentPage === 1}
-                                className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-secondary transition-colors"}
+                                className={currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-slate-100 text-blue-600 transition-colors"}
                             />
                         </PaginationItem>
                         
@@ -118,7 +118,9 @@ const RoutineTable = ({ routines }) => {
                                         <PaginationLink 
                                             isActive={currentPage === pageNum}
                                             onClick={() => setCurrentPage(pageNum)}
-                                            className={currentPage === pageNum ? "bg-primary text-white" : "hover:bg-secondary transition-colors"}
+                                            className={currentPage === pageNum 
+                                                ? "bg-blue-600 text-white hover:bg-blue-700" 
+                                                : "text-gray-700 hover:bg-slate-100 hover:text-blue-600 transition-colors"}
                                         >
                                             {pageNum}
                                         </PaginationLink>
@@ -132,7 +134,9 @@ const RoutineTable = ({ routines }) => {
                             <PaginationNext 
                                 onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                 disabled={currentPage === totalPages}
-                                className={currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-secondary transition-colors"}
+                                className={currentPage === totalPages 
+                                    ? "opacity-50 cursor-not-allowed" 
+                                    : "hover:bg-slate-100 text-blue-600 transition-colors"}
                             />
                         </PaginationItem>
                     </PaginationContent>

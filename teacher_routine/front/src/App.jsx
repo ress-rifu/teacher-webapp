@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import RoutineTable from "./components/RoutineTable";
-import WeeklyRoutine from "./components/WeeklyRoutine";
 import axios from "axios";
-import { Calendar, Clock, BookOpen, User, Home, Filter, X, Loader2 } from "lucide-react";
+import { Calendar, BookOpen, User, Home, Filter, X, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { DatePicker } from "./components/ui/date-picker";
 import { Button } from "./components/ui/button";
@@ -86,51 +85,41 @@ const App = () => {
     setSelectedSubject("all_subjects");
     setStartDate(null);
     setEndDate(null);
-  };
-  return (
+  };  return (
     <ToastProvider>
       <Router>
-        <div className="min-h-screen bg-background">
-          <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
-            <div className="container flex h-16 items-center">
-              <Link to="/" className="flex items-center gap-3 mr-10">
-                <img src="/logo.svg" alt="ACS Future School Logo" className="h-9 w-auto" />
-                <span className="font-semibold text-lg hidden md:inline-block">ACS Future School</span>
+        <div className="min-h-screen bg-background font-sans">
+          <header className="sticky top-0 z-50 w-full border-b bg-white shadow-sm">
+            <div className="container flex h-16 items-center justify-between">
+              <Link to="/" className="flex items-center gap-3">
+                <img src="/logo.svg" alt="ACS Future School Logo" className="h-10 w-auto" />
+                <span className="font-semibold text-lg hidden md:inline-block text-gray-800">ACS Future School</span>
               </Link>
 
-              <nav className="flex gap-6">
+              <nav className="flex items-center gap-4">
                 <Link
                   to="/"
-                  className="text-sm flex items-center font-medium transition-colors hover:text-primary"
+                  className="text-sm flex items-center font-medium text-gray-600 transition-colors hover:text-primary"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
-                  <span>Schedule</span>
-                </Link>
-                <Link
-                  to="/weekly"
-                  className="text-sm flex items-center font-medium transition-colors hover:text-primary"
-                >
-                  <Clock className="h-4 w-4 mr-2" />
-                  <span>Weekly View</span>
+                  <span>Class Schedule</span>
                 </Link>
               </nav>
             </div>
-          </header>
-
-          <main className="container py-6 md:py-10">
+          </header>          <main className="container py-8 md:py-12">
             <Routes>
               <Route
                 path="/"
                 element={
-                  <section className="space-y-6">
+                  <section className="space-y-8">
                     <motion.div
                       initial={{ opacity: 0, y: -20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5 }}
                       className="text-center mb-8"
                     >
-                      <h1 className="text-3xl font-bold tracking-tight text-primary">Class Schedule</h1>
-                      <p className="text-muted-foreground mt-2">ACS Future School Academic Program</p>
+                      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900">Class Schedule</h1>
+                      <p className="text-gray-500 mt-2 text-lg">ACS Future School Academic Program</p>
                     </motion.div>
 
                     <motion.div
@@ -138,39 +127,38 @@ const App = () => {
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                      <Card className="shadow-md border-neutral-100">
-                        <CardHeader className="pb-3">
+                      <Card className="shadow-lg border-0 rounded-lg overflow-hidden">
+                        <CardHeader className="pb-4 bg-slate-50 border-b">
                           <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl font-semibold flex items-center">
-                              <Filter className="h-5 w-5 mr-2 text-primary" />
+                            <CardTitle className="text-xl font-bold flex items-center text-gray-800">
+                              <Filter className="h-5 w-5 mr-3 text-blue-600" />
                               Filters
                             </CardTitle>
                             <Button
                               onClick={handleRemoveFilters}
                               variant="outline"
                               size="sm"
-                              className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
+                              className="text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors border border-gray-200"
                             >
                               <X className="h-4 w-4 mr-2" />
                               Clear Filters
                             </Button>
                           </div>
-                          <CardDescription>
+                          <CardDescription className="text-gray-500 mt-2">
                             Filter schedules by teacher, subject, class, or date range
                           </CardDescription>
                         </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium">
-                                <User className="h-4 w-4 mr-2 text-primary" />
+                        <CardContent className="pt-6 pb-6 bg-white">
+                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">                            <div className="space-y-2.5">
+                              <Label className="flex items-center text-sm font-medium text-gray-700">
+                                <User className="h-4 w-4 mr-2 text-blue-600" />
                                 Teacher
                               </Label>
                               <Select 
                                 value={selectedTeacher} 
                                 onValueChange={setSelectedTeacher}
                               >
-                                <SelectTrigger className="h-10 w-full">
+                                <SelectTrigger className="h-10 w-full bg-white border-gray-300 hover:border-blue-500 focus:border-blue-500">
                                   <SelectValue placeholder="All Teachers" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -182,18 +170,16 @@ const App = () => {
                                   ))}
                                 </SelectContent>
                               </Select>
-                            </div>
-
-                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium">
-                                <BookOpen className="h-4 w-4 mr-2 text-primary" />
+                            </div>                            <div className="space-y-2.5">
+                              <Label className="flex items-center text-sm font-medium text-gray-700">
+                                <BookOpen className="h-4 w-4 mr-2 text-blue-600" />
                                 Subject
                               </Label>
                               <Select 
                                 value={selectedSubject} 
                                 onValueChange={setSelectedSubject}
                               >
-                                <SelectTrigger className="h-10 w-full">
+                                <SelectTrigger className="h-10 w-full bg-white border-gray-300 hover:border-blue-500 focus:border-blue-500">
                                   <SelectValue placeholder="All Subjects" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -205,18 +191,16 @@ const App = () => {
                                   ))}
                                 </SelectContent>
                               </Select>
-                            </div>
-
-                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium">
-                                <User className="h-4 w-4 mr-2 text-primary" />
+                            </div>                            <div className="space-y-2.5">
+                              <Label className="flex items-center text-sm font-medium text-gray-700">
+                                <User className="h-4 w-4 mr-2 text-blue-600" />
                                 Class
                               </Label>
                               <Select 
                                 value={selectedClass} 
                                 onValueChange={setSelectedClass}
                               >
-                                <SelectTrigger className="h-10 w-full">
+                                <SelectTrigger className="h-10 w-full bg-white border-gray-300 hover:border-blue-500 focus:border-blue-500">
                                   <SelectValue placeholder="All Classes" />
                                 </SelectTrigger>
                                 <SelectContent>
@@ -228,11 +212,9 @@ const App = () => {
                                   ))}
                                 </SelectContent>
                               </Select>
-                            </div>
-
-                            <div className="space-y-2.5">
-                              <Label className="flex items-center text-sm font-medium mb-2">
-                                <Calendar className="h-4 w-4 mr-2 text-primary" />
+                            </div>                            <div className="space-y-2.5">
+                              <Label className="flex items-center text-sm font-medium text-gray-700 mb-2">
+                                <Calendar className="h-4 w-4 mr-2 text-blue-600" />
                                 Date Range
                               </Label>
                               <div className="flex flex-col gap-3">
@@ -240,11 +222,13 @@ const App = () => {
                                   selected={startDate}
                                   onSelect={setStartDate}
                                   placeholder="Start date"
+                                  className="border-gray-300 focus:border-blue-500"
                                 />
                                 <DatePicker 
                                   selected={endDate}
                                   onSelect={setEndDate}
                                   placeholder="End date"
+                                  className="border-gray-300 focus:border-blue-500"
                                 />
                               </div>
                             </div>
@@ -257,38 +241,57 @@ const App = () => {
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.4 }}
-                    >
-                      {loading ? (
-                        <div className="flex flex-col justify-center items-center h-64 bg-white rounded-lg shadow-md border border-neutral-100">
-                          <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
-                          <p className="text-muted-foreground">Loading class schedule...</p>
+                    >                      {loading ? (
+                        <div className="flex flex-col justify-center items-center h-64 bg-white rounded-lg shadow-lg border border-gray-100">
+                          <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
+                          <p className="text-gray-600 font-medium">Loading class schedule...</p>
                         </div>
                       ) : error ? (
-                        <Card className="border-destructive shadow-md">
+                        <Card className="border-red-200 shadow-lg bg-white">
                           <CardHeader>
-                            <CardTitle className="text-destructive flex items-center">
+                            <CardTitle className="text-red-600 flex items-center">
                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="8" x2="12" y2="12" />
                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                               </svg>
-                              Error
+                              Error Loading Data
                             </CardTitle>
-                            <CardDescription className="text-destructive/80">{error}</CardDescription>
+                            <CardDescription className="text-red-600/80">{error}</CardDescription>
                           </CardHeader>
+                          <CardContent>
+                            <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={() => window.location.reload()}>
+                              Retry
+                            </Button>
+                          </CardContent>
                         </Card>
                       ) : sortedRoutines.length === 0 ? (
-                        <Card className="shadow-md">
-                          <CardHeader className="text-center py-8">
-                            <div className="text-5xl mb-4 flex justify-center">📭</div>
-                            <CardTitle className="text-xl mb-2">No classes found</CardTitle>
-                            <CardDescription className="text-base">
+                        <Card className="shadow-lg border-gray-100 bg-white">
+                          <CardHeader className="text-center py-10">
+                            <div className="text-6xl mb-4 flex justify-center">📭</div>
+                            <CardTitle className="text-xl mb-2 text-gray-800">No classes found</CardTitle>
+                            <CardDescription className="text-base text-gray-600">
                               Try adjusting your filters to see more results
                             </CardDescription>
                           </CardHeader>
+                          <CardContent className="flex justify-center pb-8">
+                            <Button 
+                              onClick={handleRemoveFilters}
+                              className="bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                              Clear All Filters
+                            </Button>
+                          </CardContent>
                         </Card>
-                      ) : (
-                        <Card className="shadow-md">
+                      ) : (                        <Card className="shadow-lg border-gray-100 bg-white">
+                          <CardHeader className="bg-slate-50 border-b py-4">
+                            <CardTitle className="text-lg font-bold text-gray-800">
+                              Class Schedule Table
+                            </CardTitle>
+                            <CardDescription className="text-gray-600">
+                              Displaying {sortedRoutines.length} classes
+                            </CardDescription>
+                          </CardHeader>
                           <div className="overflow-x-auto">
                             <RoutineTable routines={sortedRoutines} />
                           </div>
@@ -297,24 +300,22 @@ const App = () => {
                     </motion.div>
                   </section>
                 }
-              />
-              <Route path="/weekly" element={<WeeklyRoutine routines={routines} />} />
-            </Routes>
+              />            </Routes>
           </main>
 
-          <footer className="border-t py-6 md:py-0 bg-secondary/20">
-            <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row">
-              <p className="text-sm text-muted-foreground text-center md:text-left">
+          <footer className="border-t py-8 md:py-6 bg-gray-50">
+            <div className="container flex flex-col items-center justify-between gap-6 md:h-16 md:flex-row">
+              <p className="text-sm text-gray-600 text-center md:text-left">
                 &copy; 2025 ACS Future School. All rights reserved.
               </p>
-              <div className="flex gap-4">
-                <Link to="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+              <div className="flex gap-6">
+                <Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">
                   Privacy Policy
                 </Link>
-                <Link to="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">
                   Terms of Service
                 </Link>
-                <Link to="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to="#" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">
                   Contact Us
                 </Link>
               </div>
