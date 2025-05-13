@@ -168,11 +168,10 @@ const App = () => {
                               >
                                 <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-indigo-300 focus:border-indigo-400 shadow-sm">
                                   <SelectValue placeholder="All Teachers" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border border-gray-200 shadow-md">
-                                  <SelectItem value="all_teachers" className="text-gray-800 focus:bg-indigo-50 focus:text-indigo-700">All Teachers</SelectItem>
+                                </SelectTrigger>                                <SelectContent className="bg-white border border-gray-200 shadow-md">
+                                  <SelectItem value="all_teachers">All Teachers</SelectItem>
                                   {uniqueTeachers.map((teacher) => (
-                                    <SelectItem key={teacher} value={teacher} className="text-gray-700 focus:bg-indigo-50 focus:text-indigo-700">
+                                    <SelectItem key={teacher} value={teacher}>
                                       {teacher}
                                     </SelectItem>
                                   ))}
@@ -191,11 +190,10 @@ const App = () => {
                               >
                                 <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-indigo-300 focus:border-indigo-400 shadow-sm">
                                   <SelectValue placeholder="All Subjects" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border border-gray-200 shadow-md">
-                                  <SelectItem value="all_subjects" className="text-gray-800 focus:bg-indigo-50 focus:text-indigo-700">All Subjects</SelectItem>
+                                </SelectTrigger>                                <SelectContent className="bg-white border border-gray-200 shadow-md">
+                                  <SelectItem value="all_subjects">All Subjects</SelectItem>
                                   {uniqueSubjects.map((subject) => (
-                                    <SelectItem key={subject} value={subject} className="text-gray-700 focus:bg-indigo-50 focus:text-indigo-700">
+                                    <SelectItem key={subject} value={subject}>
                                       {subject}
                                     </SelectItem>
                                   ))}
@@ -214,11 +212,10 @@ const App = () => {
                               >
                                 <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-indigo-300 focus:border-indigo-400 shadow-sm">
                                   <SelectValue placeholder="All Classes" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border border-gray-200 shadow-md">
-                                  <SelectItem value="all_classes" className="text-gray-800 focus:bg-indigo-50 focus:text-indigo-700">All Classes</SelectItem>
+                                </SelectTrigger>                                <SelectContent className="bg-white border border-gray-200 shadow-md">
+                                  <SelectItem value="all_classes">All Classes</SelectItem>
                                   {uniqueClasses.map((cls) => (
-                                    <SelectItem key={cls} value={cls} className="text-gray-700 focus:bg-indigo-50 focus:text-indigo-700">
+                                    <SelectItem key={cls} value={cls}>
                                       {cls}
                                     </SelectItem>
                                   ))}

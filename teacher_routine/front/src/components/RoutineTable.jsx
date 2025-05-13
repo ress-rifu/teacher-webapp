@@ -52,10 +52,9 @@ const RoutineTable = ({ routines }) => {
     const indexOfLastItem = currentPage * itemsPerPage;
     const indexOfFirstItem = indexOfLastItem - itemsPerPage;
     const currentItems = routines.slice(indexOfFirstItem, indexOfLastItem);    return (
-        <div className="space-y-6">
-            <Table className="border border-gray-200 rounded-lg overflow-hidden shadow-md">
+        <div className="space-y-6">            <Table className="border border-gray-200 rounded-lg overflow-hidden shadow-lg">
                 <TableCaption className="mt-4 text-sm text-gray-500 pb-4">Teacher routine schedule for ACS Future School</TableCaption>
-                <TableHeader className="bg-gradient-to-r from-indigo-50 to-blue-50 border-b">
+                <TableHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b">
                     <TableRow className="hover:bg-transparent">
                         <TableHead className="font-semibold text-gray-800 py-4">Class Date</TableHead>
                         <TableHead className="font-semibold text-gray-800">Time</TableHead>
@@ -68,10 +67,9 @@ const RoutineTable = ({ routines }) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {currentItems.map((routine, index) => (
-                        <TableRow 
+                    {currentItems.map((routine, index) => (                        <TableRow 
                             key={index} 
-                            className={index % 2 === 0 ? "bg-white hover:bg-indigo-50/50 transition-colors" : "bg-slate-50/80 hover:bg-indigo-50/50 transition-colors"}
+                            className={index % 2 === 0 ? "bg-white hover:bg-indigo-50/70 transition-colors" : "bg-slate-50/80 hover:bg-indigo-50/70 transition-colors"}
                         >
                             <TableCell className="font-medium text-gray-800">{routine[0]}</TableCell> {/* Class Date */}
                             <TableCell className="text-gray-700">{routine[1]}</TableCell> {/* Time */}
@@ -80,11 +78,10 @@ const RoutineTable = ({ routines }) => {
                             <TableCell className="text-gray-700">{routine[10]}</TableCell> {/* Teacher */}
                             <TableCell className="max-w-[200px] truncate text-gray-700">{routine[6]}</TableCell> {/* Topic */}
                             <TableCell className="text-gray-700">{routine[7]}</TableCell> {/* Part */}
-                            <TableCell>
-                                <Button 
+                            <TableCell>                                <Button 
                                     variant="outline" 
                                     size="sm"
-                                    className="bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-colors font-medium shadow-sm"
+                                    className="bg-white text-indigo-600 border-indigo-200 hover:bg-indigo-600 hover:text-white hover:border-indigo-600 transition-colors font-medium shadow-sm focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1"
                                     onClick={() => handleGenerateClick(routine)}
                                 >
                                     Generate

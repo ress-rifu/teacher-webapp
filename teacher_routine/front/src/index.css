@@ -91,21 +91,21 @@ html {
 
 /* Button enhancements */
 .btn-primary {
-  @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors;
+  @apply bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors;
 }
 
 .btn-secondary {
-  @apply bg-white text-blue-600 border border-blue-200 px-4 py-2 rounded-md hover:bg-blue-50 transition-colors;
+  @apply bg-white text-indigo-600 border border-indigo-200 px-4 py-2 rounded-md hover:bg-indigo-50 transition-colors;
 }
 
 /* Table styles for displaying routine data with enhanced design */
 table {
-  @apply min-w-full table-auto border-collapse;
+  @apply min-w-full table-auto border-collapse rounded-lg overflow-hidden;
 }
 
 /* Table header with professional styling */
 th {
-  @apply p-3 text-left bg-slate-50 text-gray-700 font-semibold border-b border-gray-200;
+  @apply p-3 text-left bg-gradient-to-r from-blue-50 to-indigo-50 text-gray-800 font-semibold border-b border-gray-200;
 }
 
 /* Table rows with alternating colors and hover effect */
@@ -118,7 +118,7 @@ tr:nth-child(even) {
 }
 
 tr:hover {
-  @apply bg-blue-50/50 transition-colors;
+  @apply bg-indigo-50/70 transition-colors;
 }
 
 /* Styling for the filter panel and form */
@@ -191,11 +191,16 @@ a {
 
 /* Custom table styling for even and odd rows */
 tbody tr:nth-child(even) {
-  @apply bg-gray-50;
+  @apply bg-gray-50/70;
 }
 
 tbody tr:nth-child(odd) {
   @apply bg-white;
+}
+
+/* Improve table shadow */
+.table-container {
+  @apply rounded-lg shadow-md overflow-hidden border border-gray-200;
 }
 
 /* Adding styles to the page container */

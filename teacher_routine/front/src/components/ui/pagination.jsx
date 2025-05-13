@@ -8,7 +8,7 @@ const Pagination = ({ className, ...props }) => (
   <nav
     role="navigation"
     aria-label="pagination"
-    className={cn("mx-auto flex w-full justify-center pt-2", className)}
+    className={cn("mx-auto flex w-full justify-center pt-4", className)}
     {...props}
   />
 )
@@ -33,15 +33,14 @@ const PaginationLink = ({
   isActive,
   size = "icon",
   ...props
-}) => (
-  <a
+}) => (  <a
     aria-current={isActive ? "page" : undefined}
     className={cn(
       buttonVariants({
         variant: isActive ? "default" : "outline",
         size,
       }),
-      "font-medium rounded-md shadow-sm",
+      "font-medium rounded-md shadow-sm hover:shadow-md transition-all",
       className
     )}
     {...props}
@@ -56,7 +55,7 @@ const PaginationPrevious = ({
   <PaginationLink
     aria-label="Go to previous page"
     size="default"
-    className={cn("gap-1 pl-2.5 rounded-md shadow-sm", className)}
+    className={cn("gap-1 pl-2.5 rounded-md shadow-sm hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 transition-colors", className)}
     {...props}
   >
     <ChevronLeftIcon className="h-4 w-4" />
@@ -72,7 +71,7 @@ const PaginationNext = ({
   <PaginationLink
     aria-label="Go to next page"
     size="default"
-    className={cn("gap-1 pr-2.5 rounded-md shadow-sm", className)}
+    className={cn("gap-1 pr-2.5 rounded-md shadow-sm hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-300 transition-colors", className)}
     {...props}
   >
     <span>Next</span>

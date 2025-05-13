@@ -3,10 +3,10 @@ import * as React from "react"
 import { cn } from "@/lib/utils"
 
 const Table = React.forwardRef(({ className, ...props }, ref) => (
-  <div className="relative w-full overflow-auto">
+  <div className="relative w-full overflow-auto rounded-lg">
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm bg-white", className)}
+      className={cn("w-full caption-bottom text-sm bg-white border-collapse", className)}
       {...props}
     />
   </div>
@@ -14,7 +14,7 @@ const Table = React.forwardRef(({ className, ...props }, ref) => (
 Table.displayName = "Table"
 
 const TableHeader = React.forwardRef(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b border-gray-200", className)} {...props} />
+  <thead ref={ref} className={cn("[&_tr]:border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50", className)} {...props} />
 ))
 TableHeader.displayName = "TableHeader"
 
@@ -40,7 +40,7 @@ const TableRow = React.forwardRef(({ className, ...props }, ref) => (
   <tr
     ref={ref}
     className={cn(
-      "border-b border-gray-200 transition-colors hover:bg-indigo-50/40 data-[state=selected]:bg-indigo-50",
+      "border-b border-gray-200 transition-colors hover:bg-indigo-50/70 data-[state=selected]:bg-indigo-50",
       className
     )}
     {...props}
@@ -52,7 +52,7 @@ const TableHead = React.forwardRef(({ className, ...props }, ref) => (
   <th
     ref={ref}
     className={cn(
-      "h-12 px-4 text-left align-middle font-semibold text-gray-700 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "h-12 px-4 text-left align-middle font-semibold text-gray-800 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className
     )}
     {...props}
@@ -64,7 +64,7 @@ const TableCell = React.forwardRef(({ className, ...props }, ref) => (
   <td
     ref={ref}
     className={cn(
-      "p-4 align-middle text-gray-700 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "p-4 align-middle text-gray-700 font-normal [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className
     )}
     {...props}
@@ -75,7 +75,7 @@ TableCell.displayName = "TableCell"
 const TableCaption = React.forwardRef(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={cn("mt-4 text-sm text-gray-500 italic", className)}
+    className={cn("mt-4 text-sm text-gray-500 italic font-medium", className)}
     {...props}
   />
 ))
