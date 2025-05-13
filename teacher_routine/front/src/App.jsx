@@ -2,29 +2,22 @@ import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import RoutineTable from "./components/RoutineTable";
 import axios from "axios";
-import { Calendar, BookOpen, User, Home, Filter, X, Loader2 } from "lucide-react";
+import { Calendar, BookOpen, User, Home, Filter, X, Loader2, GraduationCap } from "lucide-react";
 import { motion } from "framer-motion";
 import { DatePicker } from "./components/ui/date-picker";
 import { Button } from "./components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./components/ui/select";
+// Removed unused select imports
 import { MultiSelect } from "./components/ui/multi-select";
 import { Label } from "./components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
+// Removed unused tabs imports
 import { ToastProvider } from "./components/ui/toast";
 
 const App = () => {
   const [routines, setRoutines] = useState([]);
-  const [selectedTeacher, setSelectedTeacher] = useState("all_teachers");
-  const [selectedTeachers, setSelectedTeachers] = useState([]); // For multi-select
-  const [selectedClass, setSelectedClass] = useState("all_classes");
-  const [selectedSubject, setSelectedSubject] = useState("all_subjects");
+  const [selectedTeachers, setSelectedTeachers] = useState([]); // For teachers filter
+  const [selectedClasses, setSelectedClasses] = useState([]); // For classes filter
+  const [selectedSubjects, setSelectedSubjects] = useState([]); // For subjects filter
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -50,9 +43,20 @@ const App = () => {
 
         setRoutines(filteredRoutines);
 
-        setUniqueTeachers([...new Set(filteredRoutines.map((r) => r[10]).filter(Boolean))]);
-        setUniqueClasses([...new Set(filteredRoutines.map((r) => r[36]).filter(Boolean))]);
-        setUniqueSubjects([...new Set(filteredRoutines.map((r) => r[5]).filter(Boolean))]);
+        // Sort teachers alphabetically
+        const teachers = [...new Set(filteredRoutines.map((r) => r[10]).filter(Boolean))];
+        teachers.sort((a, b) => a.localeCompare(b));
+        setUniqueTeachers(teachers);
+
+        // Sort classes alphabetically
+        const classes = [...new Set(filteredRoutines.map((r) => r[36]).filter(Boolean))];
+        classes.sort((a, b) => a.localeCompare(b));
+        setUniqueClasses(classes);
+
+        // Sort subjects alphabetically
+        const subjects = [...new Set(filteredRoutines.map((r) => r[5]).filter(Boolean))];
+        subjects.sort((a, b) => a.localeCompare(b));
+        setUniqueSubjects(subjects);
 
         setLoading(false);
       } catch (error) {
@@ -68,14 +72,21 @@ const App = () => {
     const routineDate = new Date(routine[0]);
 
     // Check if the routine's teacher is in the selected teachers array
-    const teacherMatch = selectedTeachers.length === 0
-      ? (selectedTeacher === "all_teachers" || !selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase()))
-      : selectedTeachers.some(teacher => routine[10]?.toLowerCase().includes(teacher.toLowerCase()));
+    const teacherMatch = selectedTeachers.length === 0 ||
+      selectedTeachers.some(teacher => routine[10]?.toLowerCase().includes(teacher.toLowerCase()));
+
+    // Check if the routine's class is in the selected classes array
+    const classMatch = selectedClasses.length === 0 ||
+      selectedClasses.some(cls => routine[36]?.toLowerCase().includes(cls.toLowerCase()));
+
+    // Check if the routine's subject is in the selected subjects array
+    const subjectMatch = selectedSubjects.length === 0 ||
+      selectedSubjects.some(subject => routine[5]?.toLowerCase().includes(subject.toLowerCase()));
 
     return (
       teacherMatch &&
-      (selectedClass === "all_classes" || !selectedClass || routine[36]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
-      (selectedSubject === "all_subjects" || !selectedSubject || routine[5]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
+      classMatch &&
+      subjectMatch &&
       (!startDate || routineDate >= startDate) &&
       (!endDate || routineDate <= endDate)
     );
@@ -87,34 +98,33 @@ const App = () => {
     return dateA - dateB || a[1].localeCompare(b[1]);
   });
   const handleRemoveFilters = () => {
-    setSelectedTeacher("all_teachers");
     setSelectedTeachers([]);
-    setSelectedClass("all_classes");
-    setSelectedSubject("all_subjects");
+    setSelectedClasses([]);
+    setSelectedSubjects([]);
     setStartDate(null);
     setEndDate(null);
   };  return (
     <ToastProvider>
       <Router>
-        <div className="min-h-screen bg-white font-sans">
-          <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
+        <div className="min-h-screen bg-background font-sans">
+          <header className="sticky top-0 z-50 w-full border-b bg-background">
             <div className="container flex h-16 items-center justify-between px-4 md:px-6">
               <Link to="/" className="flex items-center gap-3">
                 <img src="/logo.svg" alt="ACS Future School Logo" className="h-10 w-auto" />
-                <span className="font-semibold text-xl hidden md:inline-block text-gray-700">ACS Future School</span>
+                <span className="font-semibold text-xl hidden md:inline-block">ACS Future School</span>
               </Link>
 
               <nav className="flex items-center gap-4">
                 <Link
                   to="/"
-                  className="text-sm flex items-center font-medium text-gray-600 transition-colors hover:text-gray-800 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-md"
+                  className="text-sm flex items-center font-medium transition-colors hover:text-foreground/80 px-4 py-2 rounded-md"
                 >
                   <Calendar className="h-4 w-4 mr-2" />
                   <span>Class Schedule</span>
                 </Link>
               </nav>
             </div>
-          </header>          <main className="container py-8 md:py-12 px-4 md:px-6">
+          </header>          <main className="container py-6 md:py-8 px-4 md:px-6">
             <Routes>
               <Route
                 path="/"
@@ -126,13 +136,13 @@ const App = () => {
                       transition={{ duration: 0.5 }}
                       className="text-center mb-8"
                     >
-                      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-700">
+                      <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
                         Class Schedule
                       </h1>
-                      <p className="text-gray-500 mt-2 text-lg">
+                      <p className="text-muted-foreground mt-2 text-lg">
                         ACS Future School Academic Program
                       </p>
-                      <div className="w-20 h-1 bg-gray-300 mx-auto mt-4 rounded-full"></div>
+                      <div className="w-20 h-1 bg-muted mx-auto mt-4 rounded-full"></div>
                     </motion.div>
 
                     <motion.div
@@ -140,15 +150,15 @@ const App = () => {
                       animate={{ opacity: 1 }}
                       transition={{ duration: 0.5, delay: 0.2 }}
                     >
-                      <Card className="shadow-md border border-gray-200 rounded-lg overflow-hidden">
-                        <CardHeader className="pb-4 bg-gray-50">
+                      <Card>
+                        <CardHeader className="pb-3 pt-5 px-6">
                           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                             <div>
-                              <CardTitle className="text-xl font-bold flex items-center text-gray-700">
-                                <Filter className="h-5 w-5 mr-3 text-gray-600" />
+                              <CardTitle className="text-xl font-bold flex items-center">
+                                <Filter className="h-5 w-5 mr-3" />
                                 Filter Options
                               </CardTitle>
-                              <CardDescription className="text-gray-500 mt-2 ml-8">
+                              <CardDescription className="mt-2 ml-8">
                                 Customize your view with the filters below
                               </CardDescription>
                             </div>
@@ -156,113 +166,71 @@ const App = () => {
                               onClick={handleRemoveFilters}
                               variant="outline"
                               size="sm"
-                              className="bg-white text-gray-700 hover:text-gray-800 hover:border-gray-300 transition-colors border border-gray-200 shadow-sm"
                             >
                               <X className="h-4 w-4 mr-2" />
                               Reset Filters
                             </Button>
                           </div>
                         </CardHeader>
-                        <CardContent className="pt-6 pb-8 bg-white px-6">
-                          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-                              <Label className="flex items-center text-sm font-medium text-gray-700">
-                                <User className="h-4 w-4 mr-2 text-gray-600" />
+                        <CardContent className="pt-4 pb-6 px-6">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            <div className="space-y-2 p-4 rounded-md border bg-card h-full">
+                              <Label className="flex items-center text-sm font-medium mb-1.5">
+                                <User className="h-4 w-4 mr-2" />
                                 Teacher
                               </Label>
-                              <div className="grid grid-cols-1 gap-2">
-                                <Select
-                                  value={selectedTeacher}
-                                  onValueChange={setSelectedTeacher}
-                                >
-                                  <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-gray-300 focus:border-gray-400 shadow-sm">
-                                    <SelectValue placeholder="All Teachers" />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-white border border-gray-200 shadow-md">
-                                    <SelectItem value="all_teachers">All Teachers</SelectItem>
-                                    {uniqueTeachers.map((teacher) => (
-                                      <SelectItem key={teacher} value={teacher}>
-                                        {teacher}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-
-                                <div>
-                                  <Label className="text-xs text-gray-500 mb-1 block">Or select multiple teachers:</Label>
-                                  <MultiSelect
-                                    options={uniqueTeachers.map(teacher => ({ value: teacher, label: teacher }))}
-                                    placeholder="Select teachers..."
-                                    selected={selectedTeachers}
-                                    onChange={setSelectedTeachers}
-                                    className="h-10 w-full"
-                                  />
-                                </div>
-                              </div>
+                              <MultiSelect
+                                options={uniqueTeachers.map(teacher => ({ value: teacher, label: teacher }))}
+                                placeholder="Select one or more teachers..."
+                                selected={selectedTeachers}
+                                onChange={setSelectedTeachers}
+                                className="w-full"
+                              />
                             </div>
 
-                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-                              <Label className="flex items-center text-sm font-medium text-gray-700">
-                                <BookOpen className="h-4 w-4 mr-2 text-gray-600" />
+                            <div className="space-y-2 p-4 rounded-md border bg-card h-full">
+                              <Label className="flex items-center text-sm font-medium mb-1.5">
+                                <BookOpen className="h-4 w-4 mr-2" />
                                 Subject
                               </Label>
-                              <Select
-                                value={selectedSubject}
-                                onValueChange={setSelectedSubject}
-                              >
-                                <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-gray-300 focus:border-gray-400 shadow-sm">
-                                  <SelectValue placeholder="All Subjects" />
-                                </SelectTrigger>                                <SelectContent className="bg-white border border-gray-200 shadow-md">
-                                  <SelectItem value="all_subjects">All Subjects</SelectItem>
-                                  {uniqueSubjects.map((subject) => (
-                                    <SelectItem key={subject} value={subject}>
-                                      {subject}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <MultiSelect
+                                options={uniqueSubjects.map(subject => ({ value: subject, label: subject }))}
+                                placeholder="Select one or more subjects..."
+                                selected={selectedSubjects}
+                                onChange={setSelectedSubjects}
+                                className="w-full"
+                              />
                             </div>
 
-                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-                              <Label className="flex items-center text-sm font-medium text-gray-700">
-                                <User className="h-4 w-4 mr-2 text-gray-600" />
+                            <div className="space-y-2 p-4 rounded-md border bg-card h-full">
+                              <Label className="flex items-center text-sm font-medium mb-1.5">
+                                <GraduationCap className="h-4 w-4 mr-2" />
                                 Class
                               </Label>
-                              <Select
-                                value={selectedClass}
-                                onValueChange={setSelectedClass}
-                              >
-                                <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-gray-300 focus:border-gray-400 shadow-sm">
-                                  <SelectValue placeholder="All Classes" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border border-gray-200 shadow-md">
-                                  <SelectItem value="all_classes">All Classes</SelectItem>
-                                  {uniqueClasses.map((cls) => (
-                                    <SelectItem key={cls} value={cls}>
-                                      {cls}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <MultiSelect
+                                options={uniqueClasses.map(cls => ({ value: cls, label: cls }))}
+                                placeholder="Select one or more classes..."
+                                selected={selectedClasses}
+                                onChange={setSelectedClasses}
+                                className="w-full"
+                              />
                             </div>
 
-                            <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
-                              <Label className="flex items-center text-sm font-medium text-gray-700 mb-2">
-                                <Calendar className="h-4 w-4 mr-2 text-gray-600" />
+                            <div className="space-y-2 p-4 rounded-md border bg-card h-full">
+                              <Label className="flex items-center text-sm font-medium mb-1.5">
+                                <Calendar className="h-4 w-4 mr-2" />
                                 Date Range
                               </Label>
                               <div className="flex flex-col gap-3">
                                 <DatePicker
                                   selected={startDate}
                                   onSelect={setStartDate}
-                                  placeholder="Start date"
-                                  className="border-gray-200 focus:border-gray-400 shadow-sm bg-white"
+                                  className="w-full"
                                 />
                                 <DatePicker
                                   selected={endDate}
                                   onSelect={setEndDate}
-                                  placeholder="End date"
-                                  className="border-gray-200 focus:border-gray-400 shadow-sm bg-white"
+                                  className="w-full"
                                 />
                               </div>
                             </div>
@@ -277,14 +245,14 @@ const App = () => {
                       transition={{ duration: 0.5, delay: 0.4 }}
                     >
                       {loading ? (
-                        <div className="flex flex-col justify-center items-center h-64 bg-white rounded-lg shadow-md border border-gray-200">
-                          <Loader2 className="h-12 w-12 text-gray-600 animate-spin mb-4" />
-                          <p className="text-gray-600 font-medium">Loading class schedule...</p>
+                        <div className="flex flex-col justify-center items-center h-64 bg-card rounded-md border">
+                          <Loader2 className="h-12 w-12 text-primary animate-spin mb-4" />
+                          <p className="text-muted-foreground font-medium">Loading class schedule...</p>
                         </div>
                       ) : error ? (
-                        <Card className="border-gray-200 shadow-md bg-white">
+                        <Card>
                           <CardHeader>
-                            <CardTitle className="text-gray-700 flex items-center">
+                            <CardTitle className="flex items-center">
                               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="8" x2="12" y2="12" />
@@ -292,42 +260,41 @@ const App = () => {
                               </svg>
                               Error Loading Data
                             </CardTitle>
-                            <CardDescription className="text-gray-500">{error}</CardDescription>
+                            <CardDescription>{error}</CardDescription>
                           </CardHeader>
                           <CardContent>
-                            <Button className="bg-gray-600 hover:bg-gray-700 text-white" onClick={() => window.location.reload()}>
+                            <Button onClick={() => window.location.reload()}>
                               Retry
                             </Button>
                           </CardContent>
                         </Card>
                       ) : sortedRoutines.length === 0 ? (
-                        <Card className="shadow-md border-gray-200 bg-white">
+                        <Card>
                           <CardHeader className="text-center py-10">
                             <div className="text-6xl mb-4 flex justify-center">📭</div>
-                            <CardTitle className="text-xl mb-2 text-gray-700">No classes found</CardTitle>
-                            <CardDescription className="text-base text-gray-500">
+                            <CardTitle className="text-xl mb-2">No classes found</CardTitle>
+                            <CardDescription className="text-base">
                               Try adjusting your filters to see more results
                             </CardDescription>
                           </CardHeader>
                           <CardContent className="flex justify-center pb-8">
                             <Button
                               onClick={handleRemoveFilters}
-                              className="bg-gray-600 hover:bg-gray-700 text-white"
                             >
                               Clear All Filters
                             </Button>
                           </CardContent>
                         </Card>
-                      ) : (                        <Card className="shadow-md border-gray-200 bg-white">
-                          <CardHeader className="bg-gray-50 border-b py-4">
-                            <CardTitle className="text-lg font-bold text-gray-700">
+                      ) : (                        <Card>
+                          <CardHeader className="border-b py-4 px-6">
+                            <CardTitle className="text-lg font-bold">
                               Class Schedule Table
                             </CardTitle>
-                            <CardDescription className="text-gray-500">
+                            <CardDescription>
                               Displaying {sortedRoutines.length} classes
                             </CardDescription>
                           </CardHeader>
-                          <div className="overflow-x-auto">
+                          <div className="overflow-x-auto p-1">
                             <RoutineTable routines={sortedRoutines} />
                           </div>
                         </Card>
@@ -336,19 +303,19 @@ const App = () => {
                   </section>
                 }
               />            </Routes>
-          </main>          <footer className="border-t py-8 md:py-6 bg-gray-50">
-            <div className="container flex flex-col items-center justify-between gap-6 md:h-16 md:flex-row px-4 md:px-6">
-              <p className="text-sm text-gray-500 text-center md:text-left">
+          </main>          <footer className="border-t py-6 md:py-4">
+            <div className="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row px-4 md:px-6">
+              <p className="text-sm text-muted-foreground text-center md:text-left">
                 &copy; 2025 ACS Future School. All rights reserved.
               </p>
               <div className="flex gap-6">
-                <Link to="#" className="text-sm text-gray-500 hover:text-gray-700 transition-colors font-medium">
+                <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
                   Privacy Policy
                 </Link>
-                <Link to="#" className="text-sm text-gray-500 hover:text-gray-700 transition-colors font-medium">
+                <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
                   Terms of Service
                 </Link>
-                <Link to="#" className="text-sm text-gray-500 hover:text-gray-700 transition-colors font-medium">
+                <Link to="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors font-medium">
                   Contact Us
                 </Link>
               </div>

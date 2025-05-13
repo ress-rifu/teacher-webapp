@@ -5,32 +5,32 @@
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 0 0% 40%;
+    --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
-    --card-foreground: 0 0% 40%;
+    --card-foreground: 222 47% 11%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 40%;
+    --popover-foreground: 222 47% 11%;
 
-    --primary: 0 0% 60%;
-    --primary-foreground: 0 0% 100%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 0 0% 96%;
-    --secondary-foreground: 0 0% 40%;
+    --secondary: 214 32% 91%;
+    --secondary-foreground: 222 47% 11%;
 
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 214 32% 91%;
+    --muted-foreground: 215 16% 47%;
 
-    --accent: 0 0% 90%;
-    --accent-foreground: 0 0% 40%;
+    --accent: 214 32% 91%;
+    --accent-foreground: 222 47% 11%;
 
     --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 210 40% 98%;
 
-    --border: 0 0% 90%;
-    --input: 0 0% 90%;
-    --ring: 0 0% 70%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 221 83% 53%;
 
     --radius: 0.5rem;
   }
@@ -58,7 +58,9 @@
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;    --border: 217 32% 17%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217 32% 17%;
     --input: 217 32% 17%;
     --ring: 221 83% 53%;
   }
@@ -69,7 +71,8 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 }
@@ -80,70 +83,55 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Bangla text styling */
+.bangla-text,
+.font-bangla {
+  font-family: 'Baloo Da 2', cursive;
+}
+
 /* Common container styles */
 .container {
   @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
 }
 
-/* Enhanced card styles */
-.card-hover {
-  @apply transition-all duration-200 hover:shadow-md;
-}
-
-/* Button enhancements */
-.btn-primary {
-  @apply bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors;
-}
-
-.btn-secondary {
-  @apply bg-white text-indigo-600 border border-indigo-200 px-4 py-2 rounded-md hover:bg-indigo-50 transition-colors;
-}
-
-/* Table styles for displaying routine data with enhanced design */
+/* Table styles */
 table {
-  @apply min-w-full table-auto border-collapse rounded-lg overflow-hidden;
+  @apply w-full border-collapse;
 }
 
-/* Table header with professional styling */
 th {
-  @apply p-3 text-left bg-gradient-to-r from-blue-50 to-indigo-50 text-gray-800 font-semibold border-b border-gray-200;
+  @apply p-3 text-left bg-muted text-muted-foreground font-medium border-b border-border;
 }
 
-/* Table rows with alternating colors and hover effect */
 td {
-  @apply p-3 border-b border-gray-200 text-gray-700;
+  @apply p-3 border-b border-border text-foreground;
 }
 
 tr:nth-child(even) {
-  @apply bg-slate-50/80;
+  @apply bg-muted/50;
 }
 
 tr:hover {
-  @apply bg-indigo-50/70 transition-colors;
-}
-
-/* Styling for the filter panel and form */
-.filter-panel input[type="text"] {
-  @apply p-2 border rounded-md shadow-sm;
+  @apply bg-muted/70 transition-colors;
 }
 
 /* Form controls styling */
 input, select {
-  @apply border border-gray-300 rounded-md px-3 py-2 w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors;
+  @apply border border-input rounded-md px-3 py-2 w-full focus:ring-2 focus:ring-ring focus:border-ring outline-none transition-colors;
 }
 
 label {
-  @apply text-gray-700 font-medium mb-1 block;
+  @apply text-foreground font-medium mb-1 block text-sm;
 }
 
 /* Loading state animation */
 .loading-pulse {
-  @apply animate-pulse bg-gray-200 rounded-md;
+  @apply animate-pulse bg-muted rounded-md;
 }
 
-/* Enhanced typography */
+/* Typography */
 h1, h2, h3, h4, h5, h6 {
-  @apply font-semibold text-gray-900 tracking-tight;
+  @apply font-semibold text-foreground tracking-tight;
 }
 
 h1 {
@@ -158,28 +146,13 @@ h3 {
   @apply text-xl md:text-2xl;
 }
 
-/* Link styling */
-a {
-  @apply text-blue-600 hover:text-blue-800 transition-colors;
-}
-
 /* Focus styles for accessibility */
 *:focus-visible {
-  @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-white;
+  @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
 }
 
 /* Responsive design for mobile */
 @media (max-width: 768px) {
-  /* Adjust filter panel layout for smaller screens */
-  .filter-panel {
-    @apply flex-col;
-  }
-
-  /* Ensure inputs take full width on mobile */
-  .filter-panel input[type="text"] {
-    @apply w-full mb-2;
-  }
-
   /* Adjust table layout for smaller screens */
   table {
     @apply w-full;
@@ -190,41 +163,22 @@ a {
   }
 }
 
-/* Custom table styling for even and odd rows */
-tbody tr:nth-child(even) {
-  @apply bg-gray-50/70;
-}
-
-tbody tr:nth-child(odd) {
-  @apply bg-white;
-}
-
-/* Improve table shadow */
+/* Table container */
 .table-container {
-  @apply rounded-lg shadow-md overflow-hidden border border-gray-200;
+  @apply rounded-md shadow-sm overflow-hidden border border-border;
 }
 
-/* Adding styles to the page container */
+/* Page container */
 .main-container {
   @apply p-6;
 }
 
-/* Button styles for actions like Export/Print */
-button {
-  @apply bg-blue-600 text-white p-2 rounded-md mt-4 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500;
-}
-
-/* Container for the app */
+/* App container */
 .app-container {
-  @apply min-h-screen bg-gray-100;
+  @apply min-h-screen bg-background;
 }
 
-/* Style for the filter button */
-button.filter-btn {
-  @apply bg-blue-600 text-white rounded-md px-4 py-2;
-}
-
-/* Add spacing between elements for better layout */
+/* Spacing utility */
 .spacing {
   @apply mb-6;
 }
