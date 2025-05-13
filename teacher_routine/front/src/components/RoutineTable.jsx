@@ -18,11 +18,24 @@ import {
   PaginationNext,
   PaginationPrevious
 } from "@/components/ui/pagination";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useState } from "react";
 
 const RoutineTable = ({ routines }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
+    const [itemsPerPage, setItemsPerPage] = useState(10);
+
+    // Handle rows per page change
+    const handleRowsPerPageChange = (value) => {
+        setItemsPerPage(value === "All" ? routines.length : parseInt(value));
+        setCurrentPage(1); // Reset to first page when changing rows per page
+    };
 
     const handleGenerateClick = async (routine) => {
         const { classDate, time, className, subject, teacher, topic, part } = routine;
@@ -90,50 +103,77 @@ const RoutineTable = ({ routines }) => {
                     ))}
                 </TableBody>
             </Table>
-              {/* Pagination */}
-            {totalPages > 1 && (
-                <Pagination className="justify-center mt-6 mb-8">
-                    <PaginationContent>
-                        <PaginationItem>
-                            <PaginationPrevious
-                                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                disabled={currentPage === 1}
-                                className="mx-1"
-                            />
-                        </PaginationItem>
+              {/* Pagination and Rows Per Page Selector */}
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-6 mb-8 px-4">
+                {/* Rows Per Page Selector - Left Side */}
+                <div className="flex items-center space-x-2 mb-4 sm:mb-0">
+                    <span className="text-sm text-muted-foreground">Rows per page:</span>
+                    <Select
+                        value={itemsPerPage === routines.length ? "All" : itemsPerPage.toString()}
+                        onValueChange={handleRowsPerPageChange}
+                    >
+                        <SelectTrigger className="h-8 w-[80px]">
+                            <SelectValue placeholder="10" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="10">10</SelectItem>
+                            <SelectItem value="20">20</SelectItem>
+                            <SelectItem value="50">50</SelectItem>
+                            <SelectItem value="100">100</SelectItem>
+                            <SelectItem value="All">All</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
 
-                        {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
-                            // Logic to display current page and surrounding pages
-                            let pageNum = i + 1;
-                            if (totalPages > 5 && currentPage > 3) {
-                                pageNum = currentPage - 3 + i + 1;
-                            }
-                            if (pageNum <= totalPages) {
-                                return (
-                                    <PaginationItem key={i}>
-                                        <PaginationLink
-                                            isActive={currentPage === pageNum}
-                                            onClick={() => setCurrentPage(pageNum)}
-                                            className="mx-1 h-9 w-9 p-0 flex items-center justify-center"
-                                        >
-                                            {pageNum}
-                                        </PaginationLink>
-                                    </PaginationItem>
-                                );
-                            }
-                            return null;
-                        })}
+                {/* Pagination - Right Side */}
+                {totalPages > 1 && (
+                    <Pagination className="justify-end">
+                        <PaginationContent className="bg-gray-50 rounded-md p-1">
+                            <PaginationItem>
+                                <PaginationPrevious
+                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                                    disabled={currentPage === 1}
+                                    className="mx-1 text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                                />
+                            </PaginationItem>
 
-                        <PaginationItem>
-                            <PaginationNext
-                                onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                disabled={currentPage === totalPages}
-                                className="mx-1"
-                            />
-                        </PaginationItem>
-                    </PaginationContent>
-                </Pagination>
-            )}
+                            {Array.from({ length: Math.min(totalPages, 5) }).map((_, i) => {
+                                // Logic to display current page and surrounding pages
+                                let pageNum = i + 1;
+                                if (totalPages > 5 && currentPage > 3) {
+                                    pageNum = currentPage - 3 + i + 1;
+                                }
+                                if (pageNum <= totalPages) {
+                                    return (
+                                        <PaginationItem key={i}>
+                                            <PaginationLink
+                                                isActive={currentPage === pageNum}
+                                                onClick={() => setCurrentPage(pageNum)}
+                                                className={`mx-1 h-9 w-9 p-0 flex items-center justify-center ${
+                                                    currentPage === pageNum
+                                                    ? "bg-blue-500 text-white hover:bg-blue-600"
+                                                    : "text-gray-600 hover:bg-gray-100 hover:text-gray-800"
+                                                }`}
+                                            >
+                                                {pageNum}
+                                            </PaginationLink>
+                                        </PaginationItem>
+                                    );
+                                }
+                                return null;
+                            })}
+
+                            <PaginationItem>
+                                <PaginationNext
+                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                                    disabled={currentPage === totalPages}
+                                    className="mx-1 text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                                />
+                            </PaginationItem>
+                        </PaginationContent>
+                    </Pagination>
+                )}
+            </div>
         </div>
     );
 };
