@@ -54,7 +54,7 @@ const RoutineTable = ({ routines }) => {
     const currentItems = routines.slice(indexOfFirstItem, indexOfLastItem);    return (
         <div className="space-y-6">
             <Table className="border-collapse">
-                <TableCaption className="mt-4 mb-2">Teacher routine schedule for ACS Future School</TableCaption>
+                <TableCaption className="mt-4 mb-2"></TableCaption>
                 <TableHeader>
                     <TableRow>
                         <TableHead className="px-4 py-3">Class Date</TableHead>
@@ -92,7 +92,7 @@ const RoutineTable = ({ routines }) => {
             </Table>
               {/* Pagination */}
             {totalPages > 1 && (
-                <Pagination className="justify-center mt-6 mb-2">
+                <Pagination className="justify-center mt-6 mb-8">
                     <PaginationContent>
                         <PaginationItem>
                             <PaginationPrevious
