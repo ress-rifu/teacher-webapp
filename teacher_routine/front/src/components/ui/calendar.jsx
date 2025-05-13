@@ -21,7 +21,7 @@ function Calendar({
         caption_label: "text-sm font-medium text-gray-800",
         nav: "space-x-1 flex items-center",        nav_button: cn(
           buttonVariants({ variant: "outline" }),
-          "h-7 w-7 bg-white border-0 p-0 text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+          "h-7 w-7 bg-white border-0 p-0 text-gray-600 hover:text-gray-700 hover:bg-gray-100 transition-colors"
         ),
         nav_button_previous: "absolute left-1",
         nav_button_next: "absolute right-1",
@@ -32,21 +32,22 @@ function Calendar({
         row: "flex w-full mt-2",
         cell: "h-9 w-9 text-center text-sm relative p-0 [&:has([aria-selected])]:rounded-md focus-within:relative focus-within:z-20",        day: cn(
           buttonVariants({ variant: "ghost" }),
-          "h-9 w-9 p-0 font-normal text-gray-800 aria-selected:opacity-100 hover:bg-indigo-50 hover:text-indigo-700 transition-colors rounded-full"
+          "h-9 w-9 p-0 font-normal text-gray-700 aria-selected:opacity-100 hover:bg-gray-100 hover:text-gray-800 transition-colors rounded-full"
         ),
-        day_range_end: "day-range-end",        day_selected:
-          "bg-indigo-600 text-white hover:bg-indigo-700 hover:text-white focus:bg-indigo-600 focus:text-white rounded-full",
+        day_range_end: "day-range-end",
+        day_selected:
+          "bg-gray-600 text-white hover:bg-gray-700 hover:text-white focus:bg-gray-600 focus:text-white rounded-full",
         day_today: "bg-gray-100 text-gray-900 font-bold",
         day_outside:
           "day-outside text-gray-400 opacity-60",
         day_disabled: "text-gray-300 opacity-50",        day_range_middle:
-          "aria-selected:bg-indigo-50 aria-selected:text-gray-900",
+          "aria-selected:bg-gray-100 aria-selected:text-gray-700",
         day_hidden: "invisible",
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />
