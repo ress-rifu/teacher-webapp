@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./components/ui/select";
+import { MultiSelect } from "./components/ui/multi-select";
 import { Label } from "./components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./components/ui/tabs";
@@ -21,6 +22,7 @@ import { ToastProvider } from "./components/ui/toast";
 const App = () => {
   const [routines, setRoutines] = useState([]);
   const [selectedTeacher, setSelectedTeacher] = useState("all_teachers");
+  const [selectedTeachers, setSelectedTeachers] = useState([]); // For multi-select
   const [selectedClass, setSelectedClass] = useState("all_classes");
   const [selectedSubject, setSelectedSubject] = useState("all_subjects");
   const [startDate, setStartDate] = useState(null);
@@ -65,8 +67,13 @@ const App = () => {
     if (!routine[0]) return false;
     const routineDate = new Date(routine[0]);
 
+    // Check if the routine's teacher is in the selected teachers array
+    const teacherMatch = selectedTeachers.length === 0
+      ? (selectedTeacher === "all_teachers" || !selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase()))
+      : selectedTeachers.some(teacher => routine[10]?.toLowerCase().includes(teacher.toLowerCase()));
+
     return (
-      (selectedTeacher === "all_teachers" || !selectedTeacher || routine[10]?.toLowerCase().includes(selectedTeacher.toLowerCase())) &&
+      teacherMatch &&
       (selectedClass === "all_classes" || !selectedClass || routine[36]?.toLowerCase().includes(selectedClass.toLowerCase())) &&
       (selectedSubject === "all_subjects" || !selectedSubject || routine[5]?.toLowerCase().includes(selectedSubject.toLowerCase())) &&
       (!startDate || routineDate >= startDate) &&
@@ -81,6 +88,7 @@ const App = () => {
   });
   const handleRemoveFilters = () => {
     setSelectedTeacher("all_teachers");
+    setSelectedTeachers([]);
     setSelectedClass("all_classes");
     setSelectedSubject("all_subjects");
     setStartDate(null);
@@ -162,22 +170,35 @@ const App = () => {
                                 <User className="h-4 w-4 mr-2 text-gray-600" />
                                 Teacher
                               </Label>
-                              <Select
-                                value={selectedTeacher}
-                                onValueChange={setSelectedTeacher}
-                              >
-                                <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-gray-300 focus:border-gray-400 shadow-sm">
-                                  <SelectValue placeholder="All Teachers" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-white border border-gray-200 shadow-md">
-                                  <SelectItem value="all_teachers">All Teachers</SelectItem>
-                                  {uniqueTeachers.map((teacher) => (
-                                    <SelectItem key={teacher} value={teacher}>
-                                      {teacher}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
+                              <div className="grid grid-cols-1 gap-2">
+                                <Select
+                                  value={selectedTeacher}
+                                  onValueChange={setSelectedTeacher}
+                                >
+                                  <SelectTrigger className="h-10 w-full bg-white border-gray-200 hover:border-gray-300 focus:border-gray-400 shadow-sm">
+                                    <SelectValue placeholder="All Teachers" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-white border border-gray-200 shadow-md">
+                                    <SelectItem value="all_teachers">All Teachers</SelectItem>
+                                    {uniqueTeachers.map((teacher) => (
+                                      <SelectItem key={teacher} value={teacher}>
+                                        {teacher}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+
+                                <div>
+                                  <Label className="text-xs text-gray-500 mb-1 block">Or select multiple teachers:</Label>
+                                  <MultiSelect
+                                    options={uniqueTeachers.map(teacher => ({ value: teacher, label: teacher }))}
+                                    placeholder="Select teachers..."
+                                    selected={selectedTeachers}
+                                    onChange={setSelectedTeachers}
+                                    className="h-10 w-full"
+                                  />
+                                </div>
+                              </div>
                             </div>
 
                             <div className="space-y-2.5 bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm">
