@@ -1,17 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
-import RoutineTable from "./components/RoutineTable";
 import axios from "axios";
 import { Calendar, BookOpen, User, Home, Filter, X, Loader2, GraduationCap } from "lucide-react";
 import { motion } from "framer-motion";
 import { DatePicker } from "./components/ui/date-picker";
 import { Button } from "./components/ui/button";
-// Removed unused select imports
 import { MultiSelect } from "./components/ui/multi-select";
 import { Label } from "./components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./components/ui/card";
-// Removed unused tabs imports
 import { ToastProvider } from "./components/ui/toast";
+
+// Lazy load components
+const RoutineTable = lazy(() => import("./components/RoutineTable"));
 
 const App = () => {
   const [routines, setRoutines] = useState([]);
@@ -27,83 +27,223 @@ const App = () => {
   const [uniqueSubjects, setUniqueSubjects] = useState([]);
   const API_URL = import.meta.env.VITE_API_URL || "https://teacher-webapp.onrender.com";
 
+  // Use a caching layer
+  const fetchWithCache = async (url) => {
+    const cacheKey = `routine_data_${url}`;
+    const cachedData = localStorage.getItem(cacheKey);
+    const cachedTimestamp = localStorage.getItem(`${cacheKey}_timestamp`);
+    
+    // Check if we have cached data less than 15 minutes old
+    if (cachedData && cachedTimestamp) {
+      const now = new Date().getTime();
+      const cacheAge = now - parseInt(cachedTimestamp);
+      
+      // Use cache if it's less than 15 minutes old
+      if (cacheAge < 15 * 60 * 1000) {
+        return JSON.parse(cachedData);
+      }
+    }
+    
+    // Fetch fresh data
+    const response = await axios.get(url);
+    
+    // Cache the response
+    localStorage.setItem(cacheKey, JSON.stringify(response.data));
+    localStorage.setItem(`${cacheKey}_timestamp`, new Date().getTime().toString());
+    
+    return response.data;
+  };
+
   useEffect(() => {
     const fetchRoutines = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/routines`);
-        const routinesData = response.data;
+        setLoading(true);
+        const routinesData = await fetchWithCache(`${API_URL}/api/routines`);
 
-        const filteredRoutines = routinesData.slice(1);
+        // Process only once after fetching
+        if (routinesData && routinesData.length > 0) {
+          const filteredRoutines = routinesData.slice(1);
 
-        filteredRoutines.sort((a, b) => {
-          const dateA = new Date(a[0]);
-          const dateB = new Date(b[0]);
-          return dateA - dateB || a[1].localeCompare(b[1]);
-        });
+          // Pre-process data once
+          const processedRoutines = filteredRoutines.map(routine => {
+            // Convert date strings to Date objects once
+            if (routine[0]) {
+              routine._dateObj = new Date(routine[0]);  // Add the date object as a property
+              routine._searchableTeacher = routine[10]?.toLowerCase() || "";
+              routine._searchableClass = routine[36]?.toLowerCase() || "";
+              routine._searchableSubject = routine[5]?.toLowerCase() || "";
+            }
+            return routine;
+          }).filter(r => r._dateObj);  // Filter out entries without valid dates
 
-        setRoutines(filteredRoutines);
+          // Sort once
+          processedRoutines.sort((a, b) => {
+            return a._dateObj - b._dateObj || (a[1]?.localeCompare(b[1]) || 0);
+          });
 
-        // Sort teachers alphabetically
-        const teachers = [...new Set(filteredRoutines.map((r) => r[10]).filter(Boolean))];
-        teachers.sort((a, b) => a.localeCompare(b));
-        setUniqueTeachers(teachers);
+          setRoutines(processedRoutines);
 
-        // Sort classes alphabetically
-        const classes = [...new Set(filteredRoutines.map((r) => r[36]).filter(Boolean))];
-        classes.sort((a, b) => a.localeCompare(b));
-        setUniqueClasses(classes);
-
-        // Sort subjects alphabetically
-        const subjects = [...new Set(filteredRoutines.map((r) => r[5]).filter(Boolean))];
-        subjects.sort((a, b) => a.localeCompare(b));
-        setUniqueSubjects(subjects);
-
-        setLoading(false);
+          // Extract unique values
+          const teachers = [...new Set(processedRoutines.map((r) => r[10]).filter(Boolean))];
+          teachers.sort((a, b) => a.localeCompare(b));
+          
+          const classes = [...new Set(processedRoutines.map((r) => r[36]).filter(Boolean))];
+          classes.sort((a, b) => a.localeCompare(b));
+          
+          const subjects = [...new Set(processedRoutines.map((r) => r[5]).filter(Boolean))];
+          subjects.sort((a, b) => a.localeCompare(b));
+          
+          setUniqueTeachers(teachers);
+          setUniqueClasses(classes);
+          setUniqueSubjects(subjects);
+        }
       } catch (error) {
+        console.error('Error fetching data:', error);
         setError("Failed to load data. Please try again later.");
+      } finally {
         setLoading(false);
       }
     };
 
     fetchRoutines();
-  }, []);
-  const filteredRoutines = routines.filter((routine) => {
-    if (!routine[0]) return false;
-    const routineDate = new Date(routine[0]);
+  }, [API_URL]);
 
-    // Check if the routine's teacher is in the selected teachers array
-    const teacherMatch = selectedTeachers.length === 0 ||
-      selectedTeachers.some(teacher => routine[10]?.toLowerCase().includes(teacher.toLowerCase()));
+  // Function to fetch filtered data from the server
+  const fetchFilteredRoutines = async () => {
+    // Only use server-side filtering if we have filters applied
+    const hasFilters = 
+      selectedTeachers.length > 0 || 
+      selectedClasses.length > 0 || 
+      selectedSubjects.length > 0 || 
+      startDate || 
+      endDate;
+      
+    if (!hasFilters) return;
+    
+    try {
+      setLoading(true);
+      
+      // Build query params
+      const params = new URLSearchParams();
+      
+      if (selectedTeachers.length === 1) {
+        params.append('teacher', selectedTeachers[0]);
+      }
+      
+      if (selectedClasses.length === 1) {
+        params.append('classId', selectedClasses[0]);
+      }
+      
+      if (selectedSubjects.length === 1) {
+        params.append('subject', selectedSubjects[0]);
+      }
+      
+      if (startDate) {
+        params.append('startDate', startDate.toISOString());
+      }
+      
+      if (endDate) {
+        params.append('endDate', endDate.toISOString());
+      }
+      
+      // Use server-side filtering only with a single filter of each type (more complex filtering still done client-side)
+      if (params.toString()) {
+        const response = await axios.get(`${API_URL}/api/filtered-routines?${params.toString()}`);
+        
+        // Process the filtered data
+        const filteredData = response.data.map(routine => {
+          if (routine[0]) {
+            routine._dateObj = new Date(routine[0]);
+            routine._searchableTeacher = routine[10]?.toLowerCase() || "";
+            routine._searchableClass = routine[36]?.toLowerCase() || "";
+            routine._searchableSubject = routine[5]?.toLowerCase() || "";
+          }
+          return routine;
+        });
+        
+        setRoutines(filteredData);
+      }
+    } catch (error) {
+      console.error('Error fetching filtered data:', error);
+      setError("Failed to load filtered data. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Trigger the filtered fetch when filters change
+  useEffect(() => {
+    if (routines.length > 0) { // Only after initial data load
+      fetchFilteredRoutines();
+    }
+  }, [selectedTeachers, selectedClasses, selectedSubjects, startDate, endDate]);
 
-    // Check if the routine's class is in the selected classes array
-    const classMatch = selectedClasses.length === 0 ||
-      selectedClasses.some(cls => routine[36]?.toLowerCase().includes(cls.toLowerCase()));
+  // Memoize filtered routines to prevent recalculation on every render
+  const filteredRoutines = useMemo(() => {
+    if (!routines.length) return [];
+    
+    return routines.filter((routine) => {
+      // If we used server-side filtering, we don't need to filter again
+      // for simple filters, but we might need additional filtering for multiple selections
+      
+      // Check if the routine's teacher is in the selected teachers array
+      const teacherMatch = selectedTeachers.length === 0 ||
+        selectedTeachers.some(teacher => routine._searchableTeacher.includes(teacher.toLowerCase()));
 
-    // Check if the routine's subject is in the selected subjects array
-    const subjectMatch = selectedSubjects.length === 0 ||
-      selectedSubjects.some(subject => routine[5]?.toLowerCase().includes(subject.toLowerCase()));
+      // Check if the routine's class is in the selected classes array
+      const classMatch = selectedClasses.length === 0 ||
+        selectedClasses.some(cls => routine._searchableClass.includes(cls.toLowerCase()));
 
-    return (
-      teacherMatch &&
-      classMatch &&
-      subjectMatch &&
-      (!startDate || routineDate >= startDate) &&
-      (!endDate || routineDate <= endDate)
-    );
-  });
+      // Check if the routine's subject is in the selected subjects array
+      const subjectMatch = selectedSubjects.length === 0 ||
+        selectedSubjects.some(subject => routine._searchableSubject.includes(subject.toLowerCase()));
 
-  const sortedRoutines = [...filteredRoutines].sort((a, b) => {
-    const dateA = new Date(a[0]);
-    const dateB = new Date(b[0]);
-    return dateA - dateB || a[1].localeCompare(b[1]);
-  });
+      // Check date range
+      const dateMatch = 
+        (!startDate || routine._dateObj >= startDate) &&
+        (!endDate || routine._dateObj <= endDate);
+
+      return teacherMatch && classMatch && subjectMatch && dateMatch;
+    });
+  }, [routines, selectedTeachers, selectedClasses, selectedSubjects, startDate, endDate]);
+
   const handleRemoveFilters = () => {
     setSelectedTeachers([]);
     setSelectedClasses([]);
     setSelectedSubjects([]);
     setStartDate(null);
     setEndDate(null);
-  };  return (
+    
+    // Refetch all routines
+    const fetchRoutines = async () => {
+      try {
+        setLoading(true);
+        const routinesData = await fetchWithCache(`${API_URL}/api/routines`);
+        
+        if (routinesData && routinesData.length > 0) {
+          const processedRoutines = routinesData.slice(1).map(routine => {
+            if (routine[0]) {
+              routine._dateObj = new Date(routine[0]);
+              routine._searchableTeacher = routine[10]?.toLowerCase() || "";
+              routine._searchableClass = routine[36]?.toLowerCase() || "";
+              routine._searchableSubject = routine[5]?.toLowerCase() || "";
+            }
+            return routine;
+          }).filter(r => r._dateObj);
+          
+          setRoutines(processedRoutines);
+        }
+      } catch (error) {
+        console.error('Error resetting filters:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchRoutines();
+  };
+
+  return (
     <ToastProvider>
       <Router>
         <div className="min-h-screen bg-background font-sans">
@@ -268,7 +408,7 @@ const App = () => {
                             </Button>
                           </CardContent>
                         </Card>
-                      ) : sortedRoutines.length === 0 ? (
+                      ) : filteredRoutines.length === 0 ? (
                         <Card>
                           <CardHeader className="text-center py-10">
                             <div className="text-6xl mb-4 flex justify-center">📭</div>
@@ -291,11 +431,13 @@ const App = () => {
                               Class Schedule Table
                             </CardTitle>
                             <CardDescription>
-                              Displaying {sortedRoutines.length} classes
+                              Displaying {filteredRoutines.length} classes
                             </CardDescription>
                           </CardHeader>
                           <div className="overflow-x-auto p-1">
-                            <RoutineTable routines={sortedRoutines} />
+                            <Suspense fallback={<div>Loading RoutineTable...</div>}>
+                              <RoutineTable routines={filteredRoutines} />
+                            </Suspense>
                           </div>
                         </Card>
                       )}

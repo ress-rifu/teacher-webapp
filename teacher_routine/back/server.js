@@ -3,10 +3,16 @@ const cors = require('cors');
 const { google } = require('googleapis');
 const dotenv = require('dotenv');
 const axios = require('axios'); // To download the teacher's image
+const compression = require('compression'); // For HTTP compression
+const apicache = require('apicache'); // For API response caching
 dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 5000;
+const cache = apicache.middleware;
+
+// Enable compression for all responses
+app.use(compression());
 
 // Enable CORS for both production and development environments
 app.use(cors({
@@ -17,13 +23,25 @@ app.use(cors({
 const sheets = google.sheets({ version: 'v4', auth: process.env.GOOGLE_SHEET_API_KEY });
 const slides = google.slides({ version: 'v1', auth: process.env.GOOGLE_SHEET_API_KEY });
 
-// Define the /api/routines endpoint
-app.get('/api/routines', async (req, res) => {
+// Cache data from Google Sheets
+let routinesCache = null;
+let lastFetchTime = 0;
+const CACHE_TTL = 15 * 60 * 1000; // 15 minutes in milliseconds
+
+// Define the /api/routines endpoint with caching
+app.get('/api/routines', cache('15 minutes'), async (req, res) => {
     try {
-        // Fetch data from Google Sheets (Columns B to M)
+        const currentTime = Date.now();
+        
+        // Use cached data if it exists and is fresh
+        if (routinesCache && (currentTime - lastFetchTime < CACHE_TTL)) {
+            return res.json(routinesCache);
+        }
+        
+        // Fetch data from Google Sheets (Columns B to AM)
         const response = await sheets.spreadsheets.values.get({
             spreadsheetId: process.env.GOOGLE_SHEET_ID,
-            range: 'Dashboard!B:AM', // Columns B to M (Class Date to Class (বাংলা))
+            range: 'Dashboard!B:AM',
         });
 
         const routines = response.data.values;
@@ -31,11 +49,91 @@ app.get('/api/routines', async (req, res) => {
         // Filter out the first row and any empty rows
         const filteredRoutines = routines.slice(1).filter((routine) => routine[0] && routine[8]);
 
+        // Update cache and timestamp
+        routinesCache = filteredRoutines;
+        lastFetchTime = currentTime;
+
         // Send filtered routines data as a JSON response
         res.json(filteredRoutines);
     } catch (err) {
         console.error(err);
+        
+        // Return cached data even if expired in case of error
+        if (routinesCache) {
+            console.log('Returning stale cache due to fetch error');
+            return res.json(routinesCache);
+        }
+        
         res.status(500).send('Error retrieving data from Google Sheets');
+    }
+});
+
+// Optimized endpoint for filtered routines
+app.get('/api/filtered-routines', cache('15 minutes'), async (req, res) => {
+    try {
+        const { teacher, classId, subject, startDate, endDate } = req.query;
+        
+        // Ensure we have data
+        if (!routinesCache || Date.now() - lastFetchTime >= CACHE_TTL) {
+            // Fetch fresh data if needed
+            const response = await sheets.spreadsheets.values.get({
+                spreadsheetId: process.env.GOOGLE_SHEET_ID,
+                range: 'Dashboard!B:AM',
+            });
+            
+            const routines = response.data.values;
+            routinesCache = routines.slice(1).filter((routine) => routine[0] && routine[8]);
+            lastFetchTime = Date.now();
+        }
+        
+        // Apply filters on the server side
+        let filtered = [...routinesCache];
+        
+        if (teacher) {
+            const teacherLower = teacher.toLowerCase();
+            filtered = filtered.filter(routine => routine[10]?.toLowerCase().includes(teacherLower));
+        }
+        
+        if (classId) {
+            const classLower = classId.toLowerCase();
+            filtered = filtered.filter(routine => routine[36]?.toLowerCase().includes(classLower));
+        }
+        
+        if (subject) {
+            const subjectLower = subject.toLowerCase();
+            filtered = filtered.filter(routine => routine[5]?.toLowerCase().includes(subjectLower));
+        }
+        
+        if (startDate) {
+            const start = new Date(startDate);
+            filtered = filtered.filter(routine => {
+                if (!routine[0]) return false;
+                const routineDate = new Date(routine[0]);
+                return routineDate >= start;
+            });
+        }
+        
+        if (endDate) {
+            const end = new Date(endDate);
+            filtered = filtered.filter(routine => {
+                if (!routine[0]) return false;
+                const routineDate = new Date(routine[0]);
+                return routineDate <= end;
+            });
+        }
+        
+        // Sort by date and time
+        filtered.sort((a, b) => {
+            const dateA = new Date(a[0]);
+            const dateB = new Date(b[0]);
+            return dateA - dateB || a[1]?.localeCompare(b[1] || '');
+        });
+        
+        // Send filtered routines data as a JSON response
+        res.json(filtered);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Error retrieving filtered data');
     }
 });
 
